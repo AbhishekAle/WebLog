@@ -9,6 +9,7 @@
     justify-content: center;
     gap: 10rem;
     align-items: center;
+    
 }
 .search-bar input{
     height:30px ;
@@ -17,8 +18,10 @@
     border: 1px solid black;
     border-radius: 4px;
     padding-left: 10px;
+    font-size: medium;
 }
 .navigation{
+    color: black;
     display: flex;
     gap: 40px;
     

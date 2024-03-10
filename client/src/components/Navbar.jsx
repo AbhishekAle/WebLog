@@ -2,8 +2,7 @@ import React from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import ArticleIcon from "@mui/icons-material/Article";
-import HdrAutoIcon from "@mui/icons-material/HdrAuto";
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import LoginIcon from "@mui/icons-material/Login";
 
 const Navbar = () => {
@@ -11,7 +10,7 @@ const Navbar = () => {
     <div className='nav-bar'>
       <div className='nav-content'>
         <Link to='/'>
-          <h1>WebLog</h1>
+          <h1>W-Log</h1>
         </Link>
         <div className='search-bar'>
           <input type='text' placeholder='Search WebLog...'></input>
@@ -23,25 +22,18 @@ const Navbar = () => {
               <span>
                 <ArticleIcon />
               </span>
-              Blogs
+              Articles
             </h3>
           </Link>
           <Link to='/about'>
             <h3>
               <span>
-                <HdrAutoIcon />
+                <NotificationsNoneIcon />
               </span>
-              About
+              Notifications
             </h3>
           </Link>
-          <Link to='/contact'>
-            <h3>
-              <span>
-                <AlternateEmailIcon />
-              </span>
-              Contact
-            </h3>
-          </Link>
+
           <Link to='/login'>
             <h3>
               <span>
