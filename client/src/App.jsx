@@ -8,6 +8,8 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import About from "./pages/About";
+import PrivateRoute from "./components/private/PrivateRoute";
+import Account from "./pages/Account";
 
 const App = () => {
   return (
@@ -21,6 +23,9 @@ const App = () => {
           <Route path='/contact' element={<Contact />}></Route>
           <Route path='/login' element={<Login />}></Route>
           <Route path='/register' element={<Register />}></Route>
+          <Route element={<PrivateRoute />}>
+            <Route path='/account ' element={<Account />}></Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

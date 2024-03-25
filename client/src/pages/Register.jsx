@@ -1,9 +1,28 @@
-import React from "react";
-import "./Register.css";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CopyrightIcon from "@mui/icons-material/Copyright";
+import axios from "axios";
+import "./LoginRegister.css";
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await axios.post(
+      "http://localhost:8000/api/register",
+      formData
+    );
+    if (res) {
+      navigate("/login");
+    }
+  };
   const navigate = useNavigate();
   return (
     <div>
@@ -12,19 +31,31 @@ const Register = () => {
       </h1>
       <div className='login-cont'>
         <div className='form-cont'>
-          <form className='form'>
+          <form className='form' onSubmit={handleSubmit}>
             <label>Username</label>
-            <input type='text' placeholder='Enter Username' required />
+            <input
+              id='username'
+              type='text'
+              placeholder='Enter Username'
+              required
+              onChange={handleChange}
+            />
             <label>Email/Phone Number</label>
             <input
+              id='email'
               type='text'
               placeholder='Enter Email/Phone Number'
               required
+              onChange={handleChange}
             />
             <label>New Password</label>
-            <input type='text' placeholder='Enter New Password' required />
-            <label>Confirm Password</label>
-            <input type='text' placeholder='Confirm Password' required />
+            <input
+              id='password'
+              type='text'
+              placeholder='Enter New Password'
+              required
+              onChange={handleChange}
+            />
             <button className='login-btn'>Register</button>
             <p className='login-text'>
               Already have account?
@@ -33,15 +64,16 @@ const Register = () => {
           </form>
         </div>
       </div>
-      <p className='auth-footer'>
-        <h3 className='footer1' onClick={() => navigate("/contact")}>
-          For any queries.<span>Contact Us</span>
-        </h3>
+      <div className='auth-footer'>
+        <p className='footer1'>
+          For any queries.
+          <span onClick={() => navigate("/contact")}>Contact Us</span>
+        </p>
         <h3 className='footer2'>
           <CopyrightIcon />
           all rights reserved.
         </h3>
-      </p>
+      </div>
     </div>
   );
 };
