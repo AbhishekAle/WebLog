@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -13,18 +12,18 @@ import Account from "./pages/Account";
 
 const App = () => {
   return (
-    <div className='app'>
+    <div className="app">
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path='/' element={<HomePage />}></Route>
-          <Route path='/blogs' element={<Blog />}></Route>
-          <Route path='/about' element={<About />}></Route>
-          <Route path='/contact' element={<Contact />}></Route>
-          <Route path='/login' element={<Login />}></Route>
-          <Route path='/register' element={<Register />}></Route>
+          <Route path="/" element={<HomePage />}></Route>
+          <Route path="/blogs" element={<Blog />}></Route>
+          <Route path="/about" element={<About />}></Route>
+          <Route path="/contact" element={<Contact />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
           <Route element={<PrivateRoute />}>
-            <Route path='/account ' element={<Account />}></Route>
+            <Route path="/account" element={<Account />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>

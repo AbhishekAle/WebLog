@@ -1,9 +1,8 @@
-import { Button } from "flowbite-react";
 import React from "react";
 
 const Account = () => {
   return (
-    <div>
+    <div className='cont'>
       <Button>Click me</Button>
     </div>
   );
