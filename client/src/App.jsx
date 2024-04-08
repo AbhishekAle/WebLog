@@ -12,7 +12,7 @@ import Account from "./pages/Account";
 
 const App = () => {
   return (
-    <div className="app">
+    <div className="">
       <BrowserRouter>
         <Navbar />
         <Routes>
