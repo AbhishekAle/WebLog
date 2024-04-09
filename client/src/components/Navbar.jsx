@@ -45,7 +45,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full sticky top-0 z-20">
       <div className="flex justify-evenly items-center bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 text-white py-2">
         <div className="font-semibold text-3xl">
           <Link to="/">
