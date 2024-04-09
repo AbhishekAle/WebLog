@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ArticleIcon from "@mui/icons-material/Article";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import LoginIcon from "@mui/icons-material/Login";
 import PersonIcon from "@mui/icons-material/Person";
 import { HiCog, HiCurrencyDollar, HiViewGrid } from "react-icons/hi";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";

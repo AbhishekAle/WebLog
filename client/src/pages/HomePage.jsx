@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import { MdSpaceDashboard } from "react-icons/md";
@@ -8,6 +8,9 @@ import { FaBookmark } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import PersonIcon from "@mui/icons-material/Person";
+import { IoMdPhotos } from "react-icons/io";
+import { MdCalendarMonth } from "react-icons/md";
 
 const data = [
   {
@@ -50,7 +53,26 @@ const data = [
 const HomePage = () => {
   const [stories, setStories] = useState(data);
   const [activeButton, setActiveButton] = useState("");
-  console.log(activeButton);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDate = (date) => {
+    const options = {
+      month: "long",
+      weekday: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(date);
+  };
 
   const handleClick = (button) => {
     setActiveButton(button);
@@ -60,7 +82,7 @@ const HomePage = () => {
     <Layout>
       <div className="flex flex-row w-full gap-4 py-2">
         <div className="w-1/5 flex">
-          <div className="sticky top-16 h-[60vh] bg-gray-200 rounded-2xl p-8 flex flex-col justify-between">
+          <div className="sticky top-20 h-[60vh] bg-gray-200 rounded-2xl p-8 flex flex-col justify-between">
             <div className="flex flex-col">
               <ul className="flex flex-col gap-5 px-2 ">
                 <Link to="/account" onClick={() => handleClick("dashboard")}>
@@ -189,6 +211,37 @@ const HomePage = () => {
               </span>
             ))}
           </div>
+          <div className="flex  justify-center py-4">
+            <div className="border-2  w-full bg-gray-200 rounded-xl">
+              <form className="flex items-center justify-center gap-4 p-4">
+                <span className="border p-3 rounded-full text-[#DC143C] bg-white">
+                  <PersonIcon />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Whats on your mind.."
+                  className="border w-4/5 p-3 rounded-2xl"
+                />
+              </form>
+              <hr className="border border-white" />
+              <div className="flex justify-center p-4">
+                <ul className="flex gap-20">
+                  <li className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer">
+                    <span className="font-semibold text-2xl text-[#DC143C]">
+                      <IoMdPhotos />
+                    </span>
+                    Photo/Video
+                  </li>
+                  <li className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer">
+                    <span className="font-semibold text-2xl text-[#DC143C]">
+                      <FaNewspaper />
+                    </span>
+                    Articles
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
           <div className="py-4">
             <div className="flex flex-col justify-center items-center gap-2">
               {stories.map((story, index) => (
@@ -201,6 +254,14 @@ const HomePage = () => {
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+        <div className=" sticky top-20 h-fit  mx-20 p-2 bg-gray-200 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl text-[#DC143C]">
+              <MdCalendarMonth />
+            </span>
+            {formatDate(currentTime)}
           </div>
         </div>
       </div>
