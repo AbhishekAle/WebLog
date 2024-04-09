@@ -4,77 +4,45 @@ import CopyrightIcon from "@mui/icons-material/Copyright";
 import axios from "axios";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+  const [username, setUsername] = useState("");
+  const [contact, setContact] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post(
-      "http://localhost:8000/api/register",
-      formData
-    );
-    if (res) {
-      navigate("/login");
+
+    const contactPattern =
+      /^(?:[^<>()[\]\\.,;:\s@"]+@\w+(?:\.\w+)+)|(?:\+\d{1,3}\s*)?\d{10}$/;
+    if (!contactPattern.test(contact)) {
+      setError("Invalid email or phone number format");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:8000/api/register", {
+        username,
+        contact,
+        password,
+      });
+      if (res) {
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setError("Registration failed. Please try again later.");
     }
   };
+
   const navigate = useNavigate();
+
+  const handleContactChange = (e) => {
+    setContact(e.target.value);
+    setError(null);
+  };
+
   return (
-    // <div>
-    //   <h1 className="intro">
-    //     WebLog <span>Create your profile.</span>
-    //   </h1>
-    //   <div className="login-cont">
-    //     <div className="form-cont">
-    //       <form className="form" onSubmit={handleSubmit}>
-    //         <label>Username</label>
-    //         <input
-    //           id="username"
-    //           type="text"
-    //           placeholder="Enter Username"
-    //           required
-    //           onChange={handleChange}
-    //         />
-    //         <label>Email/Phone Number</label>
-    //         <input
-    //           id="email"
-    //           type="text"
-    //           placeholder="Enter Email/Phone Number"
-    //           required
-    //           onChange={handleChange}
-    //         />
-    //         <label>New Password</label>
-    //         <input
-    //           id="password"
-    //           type="text"
-    //           placeholder="Enter New Password"
-    //           required
-    //           onChange={handleChange}
-    //         />
-    //         <button className="login-btn">Register</button>
-    //         <p className="login-text">
-    //           Already have account?
-    //           <span onClick={() => navigate("/login")}>Login</span>
-    //         </p>
-    //       </form>
-    //     </div>
-    //   </div>
-    //   <div className="auth-footer">
-    //     <p className="footer1">
-    //       For any queries.
-    //       <span onClick={() => navigate("/contact")}>Contact Us</span>
-    //     </p>
-    //     <h3 className="footer2">
-    //       <CopyrightIcon />
-    //       all rights reserved.
-    //     </h3>
-    //   </div>
-    // </div>
-    <div className="px-20 py-10 h-[95vh]  bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 text-white">
+    <div className="px-20 py-10 h-[95vh] bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 text-white">
       <div className="flex flex-col justify-center gap-5 bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 shadow-lg shadow-blue-500/200 p-10 rounded-xl">
         <h1 className="flex gap-1 font-semibold text-l items-center">
           Get Registered in
@@ -89,17 +57,19 @@ const Register = () => {
                 id="username"
                 type="text"
                 placeholder="Enter Username"
-                onChange={handleChange}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="rounded p-1.5 text-black"
               />
             </div>
             <div className="flex flex-col">
               <label>Email/Phone Number</label>
               <input
-                id="username"
+                id="contact"
                 type="text"
                 placeholder="Enter Email/Phone Number"
-                onChange={handleChange}
+                value={contact}
+                onChange={handleContactChange}
                 className="rounded p-1.5 text-black"
               />
             </div>
@@ -110,17 +80,19 @@ const Register = () => {
                 id="password"
                 type="password"
                 placeholder="Enter Password"
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="rounded p-1.5 text-black"
               />
             </div>
             <button className="mt-6 h-fit bg-[#DC143C] hover:bg-red-700 p-1.5 px-3 rounded">
               Register
             </button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </form>
-          <div className=" flex gap-1 flex-col">
+          <div className="flex gap-1 flex-col">
             <p className="flex gap-1">
-              Already have account?
+              Already have an account?
               <span onClick={() => navigate("/login")}>
                 {" "}
                 <p className="underline text-red-500 cursor-pointer">Login</p>

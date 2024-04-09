@@ -8,17 +8,21 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      lowercase: true,
+      sparse: true,
+      unique: true,
     },
     phoneNumber: {
-      type: String,
+      type: Number,
+      sparse: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 const userModel = mongoose.model("User", userSchema);
