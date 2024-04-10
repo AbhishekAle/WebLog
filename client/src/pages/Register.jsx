@@ -18,7 +18,6 @@ const Register = () => {
       setError("Invalid email or phone number format");
       return;
     }
-
     try {
       const res = await axios.post("http://localhost:8000/api/register", {
         username,

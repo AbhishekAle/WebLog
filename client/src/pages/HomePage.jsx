@@ -43,8 +43,7 @@ const data = [
   },
   {
     title: "Banner 5",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
+    imageMobile: "https://api.slingacademy.com/v1/sample-data/photos",
     imageDesktop:
       "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
   },
@@ -108,7 +107,7 @@ const HomePage = () => {
                       activeButton === "connections" ? "text-[#DC143C]" : ""
                     }`}>
                     <span className="flex items-center text-[#DC143C]">
-                      <MdSpaceDashboard />
+                      <FaUserFriends />
                     </span>
                     Connections
                     {activeButton === "connections" && (
@@ -156,7 +155,7 @@ const HomePage = () => {
                       activeButton === "messages" ? "text-[#DC143C]" : ""
                     }`}>
                     <span className="flex items-center text-[#DC143C]">
-                      <BiSolidMessageDetail />
+                      <MdOndemandVideo />
                     </span>
                     Videos
                     {activeButton === "messages" && (
@@ -172,7 +171,7 @@ const HomePage = () => {
                       activeButton === "videos" ? "text-[#DC143C]" : ""
                     }`}>
                     <span className="flex items-center text-[#DC143C]">
-                      <MdOndemandVideo />
+                      <BiSolidMessageDetail />
                     </span>
                     Messages
                     {activeButton === "videos" && (
@@ -219,20 +218,20 @@ const HomePage = () => {
                 </span>
                 <input
                   type="text"
-                  placeholder="Whats on your mind.."
+                  placeholder="What's on your mind.."
                   className="border w-4/5 p-3 rounded-2xl"
                 />
               </form>
               <hr className="border border-white" />
               <div className="flex justify-center p-4">
                 <ul className="flex gap-20">
-                  <li className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer">
+                  <li className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium">
                     <span className="font-semibold text-2xl text-[#DC143C]">
                       <IoMdPhotos />
                     </span>
                     Photo/Video
                   </li>
-                  <li className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer">
+                  <li className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium">
                     <span className="font-semibold text-2xl text-[#DC143C]">
                       <FaNewspaper />
                     </span>

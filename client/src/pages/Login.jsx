@@ -26,7 +26,7 @@ const Login = () => {
       dispatch(setUser(data));
 
       if (res) {
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       setError(error.response.data.message);
@@ -79,7 +79,7 @@ const Login = () => {
               </h1>
             )}
 
-            <p className="flex gap-1">
+            <div className="flex gap-1">
               Don't have account?
               <span onClick={() => navigate("/register")}>
                 {" "}
@@ -87,7 +87,7 @@ const Login = () => {
                   Register
                 </p>
               </span>
-            </p>
+            </div>
           </div>
         </div>
         <div className="flex gap-4">
