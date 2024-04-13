@@ -46,7 +46,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full sticky top-0 z-20">
-      <div className="flex justify-between items-center bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 text-white py-2 px-20">
+      <div className="flex justify-between items-center bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 text-white py-2 px-40">
         <div className="font-semibold text-3xl">
           <Link to="/home">
             <h1>
@@ -68,7 +68,7 @@ const Navbar = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between w-[10%]">
+        <div className="flex items-center justify-between gap-20 ">
           <Link to="/articles" title="Articles">
             <span className="hover:text-[#DC143C] transition duration-300 ease-in-out">
               <ArticleIcon fontSize="large" />
@@ -78,7 +78,7 @@ const Navbar = () => {
           {userData ? (
             <>
               <div className="w-full">
-                <div className="flex justify-evenly" ref={dropdownRef}>
+                <div className="flex gap-20" ref={dropdownRef}>
                   <Link to="/about" title="Notification">
                     <span className="hover:text-[#DC143C]">
                       <NotificationsNoneIcon fontSize="large" />
@@ -101,7 +101,7 @@ const Navbar = () => {
                         </button>
                         <hr />
                       </Link>
-                      <div>
+                      <Link to="/settings-privacy">
                         <button
                           onClick={() => handleClick("settings")}
                           className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out ${
@@ -113,7 +113,7 @@ const Navbar = () => {
                             <div className="absolute left-16 top-[6rem] bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
                           )}
                         </button>
-                      </div>
+                      </Link>
                       <hr />
 
                       <div>
@@ -154,7 +154,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login">
+              <Link to="/login" className="w-">
                 <span className="hover:text-[#DC143C] transition duration-300 ease-in-out font-semibold">
                   Login/Register
                 </span>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import CopyrightIcon from "@mui/icons-material/Copyright";
+import { LiaCopyrightSolid } from "react-icons/lia";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUserFriends } from "react-icons/fa";
 import { FaNewspaper } from "react-icons/fa6";
@@ -79,8 +79,8 @@ const HomePage = () => {
 
   return (
     <Layout>
-      <div className="flex flex-row w-full gap-4 py-2">
-        <div className="w-1/5 flex">
+      <div className="flex flex-row w-full gap-20 py-2">
+        <div className="w- flex pl-10">
           <div className="sticky top-20 h-[60vh] bg-gray-200 rounded-2xl p-8 flex flex-col justify-between">
             <div className="flex flex-col">
               <ul className="flex flex-col gap-5 px-2 ">
@@ -189,9 +189,10 @@ const HomePage = () => {
                 <li className="hover:text-[#DC143C] cursor-pointer underline text-sm">
                   Terms
                 </li>
-                <li className="text-sm">
-                  <CopyrightIcon />
-                  all rights reserved.
+                <li className="text-sm flex items-center gap-1">
+                  2024
+                  <LiaCopyrightSolid />
+                  Web-Log
                 </li>
               </ul>
             </div>
@@ -255,7 +256,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className=" sticky top-20 h-fit  mx-20 p-2 bg-gray-200 rounded-lg shadow-lg">
+        <div className=" sticky top-20 h-fit  mx-10 p-2 bg-gray-200 rounded-lg shadow-lg">
           <div className="flex items-center gap-2">
             <span className="text-2xl text-[#DC143C]">
               <MdCalendarMonth />

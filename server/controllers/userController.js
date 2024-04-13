@@ -1,5 +1,5 @@
 import userModel from "../models/userModel.js";
-// import { errorHandler } from "../middleware/error.js";
+import { errorHandler } from "../middleware/error.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -52,6 +52,36 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
+//update user controller
+export const updateUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "User not authorised"));
+  }
+  try {
+    if (req.body.password) {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
+    const updatedUserData = await userModel.findByIdAndUpdate(
+      req.prams.id,
+      {
+        $set: {
+          username: req.body.username,
+          email: req.body.email,
+          phoneNumber: req.body.phoneNumber,
+          password: req.body.password,
+          avatar: req.body.avatar,
+        },
+      },
+      { new: true }
+    );
+    const { password, ...rest } = updatedUserData._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
 //logout controller
 export const logoutUser = async (req, res) => {
   res.clearCookie("access_token");
