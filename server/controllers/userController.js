@@ -63,7 +63,7 @@ export const updateUser = async (req, res, next) => {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
     const updatedUserData = await userModel.findByIdAndUpdate(
-      req.prams.id,
+      req.params.id, // corrected typo here
       {
         $set: {
           username: req.body.username,
