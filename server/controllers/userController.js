@@ -47,7 +47,7 @@ export const loginUser = async (req, res, next) => {
     res
       .cookie("access_token", token, { httpOnly: true, sameSite: "None" })
       .status(200)
-      .json(rest);
+      .json({ ...rest, token });
   } catch (error) {
     next(error);
   }
@@ -79,6 +79,30 @@ export const updateUser = async (req, res, next) => {
     res.status(200).json(rest);
   } catch (error) {
     next(error);
+  }
+};
+
+//getAllUser controller
+export const getAllUser = async (req, res) => {
+  try {
+    const users = await userModel.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.ststus(500).json({ error: error.message });
+  }
+};
+
+//getUserById controller
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await userModel.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 

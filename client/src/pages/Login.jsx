@@ -22,6 +22,8 @@ const Login = () => {
     try {
       const res = await axios.post("http://localhost:8000/api/login", formData);
       const data = await res.data;
+      const token = data.token;
+      console.log(token);
 
       dispatch(setUser(data));
 
