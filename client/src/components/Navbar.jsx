@@ -101,7 +101,7 @@ const Navbar = () => {
                         </button>
                         <hr />
                       </Link>
-                      <Link to="/settings-privacy/:id">
+                      <Link to={`/settings-privacy/${userData.id}`}>
                         <button
                           onClick={() => handleClick("settings")}
                           className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out ${

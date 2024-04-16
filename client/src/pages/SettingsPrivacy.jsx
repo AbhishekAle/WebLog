@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SettingsPrivacy = () => {
+  const { userData } = useSelector((state) => state.user);
+  const token = userData.token;
+  console.log(token);
   const [formData, setFormdata] = useState([
     {
       username: "",
@@ -19,7 +23,12 @@ const SettingsPrivacy = () => {
   const fetchData = async () => {
     try {
       const id = params.id;
-      const res = await axios.get(`http://localhost:8000/api/users/${id}`, {});
+      const res = await axios.get(`http://localhost:8000/api/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await res.data;
       console.log("data", data);
       setFormdata(data);
