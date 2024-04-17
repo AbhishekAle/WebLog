@@ -22,7 +22,9 @@ const Login = () => {
     try {
       const res = await axios.post("http://localhost:8000/api/login", formData);
       const data = await res.data;
-      console.log(data);
+      const id = data._id;
+      console.log(id);
+
       dispatch(setUser(data));
 
       if (res) {

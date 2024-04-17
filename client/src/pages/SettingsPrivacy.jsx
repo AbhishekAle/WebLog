@@ -6,7 +6,8 @@ import { useSelector } from "react-redux";
 const SettingsPrivacy = () => {
   const { userData } = useSelector((state) => state.user);
   const token = userData.token;
-  console.log(token);
+  const id = userData._id;
+  console.log(id);
   const [formData, setFormdata] = useState([
     {
       username: "",
@@ -15,14 +16,12 @@ const SettingsPrivacy = () => {
       password: "",
     },
   ]);
-  const params = useParams();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
   const fetchData = async () => {
     try {
-      const id = params.id;
       const res = await axios.get(`http://localhost:8000/api/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

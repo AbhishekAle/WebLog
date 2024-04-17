@@ -31,7 +31,7 @@ const App = () => {
             <Route path="/account" element={<Account />}></Route>
             <Route path="/home" element={<HomePage />}></Route>
             <Route
-              path="/settings-privacy/:id"
+              path="/settings-privacy"
               element={<SettingsPrivacy />}></Route>
           </Route>
         </Routes>
