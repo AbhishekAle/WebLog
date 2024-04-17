@@ -10,7 +10,6 @@ import PrivateRoute from "./components/private/PrivateRoute";
 import Account from "./pages/Account";
 import LandingPage from "./pages/LandingPage";
 import Articles from "./pages/Articles";
-import "./App.css";
 import SingleArticle from "./components/SingleArticle";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
 
@@ -20,19 +19,17 @@ const App = () => {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/" element={<LandingPage />}></Route>
-          <Route path="/articles" element={<Articles />}></Route>
-          <Route path="/about" element={<About />}></Route>
-          <Route path="/contact" element={<Contact />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/register" element={<Register />}></Route>
-          <Route path="/single-article" element={<SingleArticle />}></Route>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/articles" element={<Articles />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/single-article" element={<SingleArticle />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/account" element={<Account />}></Route>
-            <Route path="/home" element={<HomePage />}></Route>
-            <Route
-              path="/settings-privacy"
-              element={<SettingsPrivacy />}></Route>
+            <Route path="/account" element={<Account />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/settings-privacy/:id" element={<SettingsPrivacy />} />
           </Route>
         </Routes>
       </BrowserRouter>

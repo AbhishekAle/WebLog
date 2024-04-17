@@ -11,12 +11,20 @@ export const registerUser = async (req, res, next) => {
   }
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const newUser = new userModel({
-    username,
-    email,
-    phoneNumber,
-    password: hashedPassword,
-  });
+  let newUser;
+  if (email) {
+    newUser = new userModel({
+      username,
+      email,
+      password: hashedPassword,
+    });
+  } else {
+    newUser = new userModel({
+      username,
+      phoneNumber,
+      password: hashedPassword,
+    });
+  }
 
   try {
     await newUser.save();
@@ -54,27 +62,57 @@ export const loginUser = async (req, res, next) => {
 };
 
 //update user controller
+
 export const updateUser = async (req, res, next) => {
+  // Check if the user is authorized to update their own account
   if (req.user.id !== req.params.id) {
-    return next(errorHandler(401, "User not authorised"));
+    return next(errorHandler(401, "User not authorized"));
   }
+
   try {
+    // Check if password is provided and hash it if necessary
     if (req.body.password) {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
-    const updatedUserData = await userModel.findByIdAndUpdate(
-      req.params.id, // corrected typo here
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          phoneNumber: req.body.phoneNumber,
-          password: req.body.password,
-          avatar: req.body.avatar,
+
+    // Determine which type of contact information is provided (email or phone number)
+    let updatedUserData;
+    if (req.body.email) {
+      // Update user with email
+      updatedUserData = await userModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+            avatar: req.body.avatar,
+          },
         },
-      },
-      { new: true }
-    );
+        { new: true }
+      );
+    } else if (req.body.phoneNumber) {
+      // Update user with phone number
+      updatedUserData = await userModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            username: req.body.username,
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+            avatar: req.body.avatar,
+          },
+        },
+        { new: true }
+      );
+    } else {
+      // If neither email nor phone number is provided, return an error
+      return res
+        .status(400)
+        .json({ error: "Email or phone number is required" });
+    }
+
+    // Omit password field from the response
     const { password, ...rest } = updatedUserData._doc;
     res.status(200).json(rest);
   } catch (error) {

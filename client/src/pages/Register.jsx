@@ -8,20 +8,32 @@ const Register = () => {
   const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const contactPattern =
       /^(?:[^<>()[\]\\.,;:\s@"]+@\w+(?:\.\w+)+)|(?:\+\d{1,3}\s*)?\d{10}$/;
+
+    // Check if the contact input matches the pattern for either email or phone number
     if (!contactPattern.test(contact)) {
-      setError("Invalid email or phone number format");
+      setError("Enter valid email or phone number!");
       return;
     }
+
+    // Extract email and phone number from the contact input
+    let extractedEmail = "";
+    let extractedPhoneNumber = "";
+    if (contact.includes("@")) {
+      extractedEmail = contact;
+    } else {
+      extractedPhoneNumber = contact;
+    }
+
     try {
       const res = await axios.post("http://localhost:8000/api/register", {
         username,
-        contact,
+        email: extractedEmail,
+        phoneNumber: extractedPhoneNumber,
         password,
       });
       if (res) {
@@ -90,13 +102,13 @@ const Register = () => {
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </form>
           <div className="flex gap-1 flex-col">
-            <p className="flex gap-1">
+            <span className="flex gap-1">
               Already have an account?
               <span onClick={() => navigate("/login")}>
                 {" "}
                 <p className="underline text-red-500 cursor-pointer">Login</p>
               </span>
-            </p>
+            </span>
           </div>
         </div>
         <div className="flex gap-4">

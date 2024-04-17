@@ -6,20 +6,21 @@ import { useSelector } from "react-redux";
 const SettingsPrivacy = () => {
   const { userData } = useSelector((state) => state.user);
   const token = userData.token;
-  const id = userData._id;
-  console.log(id);
+  const { id } = useParams();
+
   const [formData, setFormdata] = useState([
     {
       username: "",
       email: "",
       phoneNumber: "",
-      password: "",
     },
   ]);
+  console.log(formData);
 
   useEffect(() => {
     fetchData();
   }, [id]);
+
   const fetchData = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/api/users/${id}`, {
@@ -28,17 +29,19 @@ const SettingsPrivacy = () => {
           "Content-Type": "application/json",
         },
       });
-      const data = await res.data;
-      console.log("data", data);
+      const data = res.data;
       setFormdata(data);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   };
+
   const handleChange = (e) => {
-    setFormdata({ ...formData, [e.target.value]: e.target.name });
+    setFormdata([{ ...formData, [e.target.name]: e.target.value }]);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
   };
 
   return (
@@ -47,14 +50,13 @@ const SettingsPrivacy = () => {
         className="flex flex-col items-center justify-center "
         onSubmit={handleSubmit}>
         <div className="flex flex-col w-1/2 gap-1 font-semibold">
-          {/* <label className="pt-2">Profile Picture</label>
-          <input type="file" /> */}
           <label className="pt-2">Username</label>
           <input
             name="username"
             type="text"
             className="border p-2 rounded-lg"
             onChange={handleChange}
+            value={formData.username}
           />
           <label className="pt-2">Email</label>
           <input
@@ -62,6 +64,7 @@ const SettingsPrivacy = () => {
             type="text"
             className="border p-2 rounded-lg"
             onChange={handleChange}
+            value={formData.email}
           />
         </div>
         <div className="flex flex-col w-1/2 gap-1 font-semibold">
@@ -71,6 +74,7 @@ const SettingsPrivacy = () => {
             type="text"
             className="border p-2 rounded-lg "
             onChange={handleChange}
+            value={formData.phoneNumber}
           />
           <label className="pt-2">Password</label>
           <input
