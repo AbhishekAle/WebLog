@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import { IoMdPhotos } from "react-icons/io";
 import { MdCalendarMonth } from "react-icons/md";
+import { useSelector } from "react-redux";
+import pasupatinath from "../assets/pasupatinath.jpg";
 
 const data = [
   {
@@ -53,6 +55,8 @@ const HomePage = () => {
   const [stories, setStories] = useState(data);
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { userData } = useSelector((state) => state.user);
+  const username = userData.username;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -90,9 +94,13 @@ const HomePage = () => {
                       activeButton === "dashboard" ? "text-[#DC143C]" : ""
                     }`}>
                     <span className="flex items-center text-[#DC143C]">
-                      <MdSpaceDashboard />
+                      <img
+                        src={`http://localhost:8000/userProfile/${userData.avatar}`}
+                        alt="a"
+                        className="h-8 w-8 rounded-full"
+                      />
                     </span>
-                    Dashboard
+                    {username}
                     {activeButton === "dashboard" && (
                       <div className="absolute top-[3.2rem]  bottom-0 left-16 sm:block hidden bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
                     )}

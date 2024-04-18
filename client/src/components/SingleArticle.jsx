@@ -3,13 +3,13 @@ import sagarmatha from "../assets/sagarmatha.jpg";
 
 const SingleArticle = () => {
   return (
-    <div className="mx-auto bg-[#efecd3]">
-      <div className="flex flex-wrap py-4">
-        <div className="w-full ">
+    <div className="mx-auto bg-[#efecd3] min-h-screen">
+      <div className="flex flex-wrap py-4 px-56">
+        <div className="w-full">
           <img
             src={sagarmatha}
             alt="Article Image"
-            className="float-left mr-5 mb-5 pl-5"
+            className="float-left mr-5 mb-5 pl-5 w-1/2 h-[42vh]"
           />
           <label className="static top-[33.8rem] left-4 font-semibold text-lg w-[45%]">
             "As of 2005, about 3,500 Sherpa people lived in villages and
@@ -100,14 +100,6 @@ const SingleArticle = () => {
             entry vte National Parks, Reserves and Ramsar Sites of Nepal vte
             World Heritage Sites in Nepal Cultural SwayambhunathBhaktapur Durbar
             SquareBoudhanath StupaChangu Narayan TempleKathmandu Durbar
-            SquarePashupatinath TemplePatan Durbar SquareLumbini flagNepal
-            portal Natural Chitwan National Park Sagarmatha National Park vte
-            Koshi Province articles Authority control databases Edit this at
-            Wikidata Categories: IUCN Category IINational parks of NepalMount
-            EverestSolukhumbu DistrictProtected areas established in 19761976
-            establishments in Asia1970s establishments in NepalImportant Bird
-            Areas of NepalWorld Heritage Sites in Nepal1976 establishments in
-            Nepal
           </p>
         </div>
       </div>

@@ -188,7 +188,7 @@ const Articles = () => {
   };
 
   return (
-    <div className="px-40 py-4 bg-[#efecd3]">
+    <div className="px-40 py-4 bg-[#efecd3] min-h-screen">
       <div className="w-full">
         <div className="flex gap-10 py-2">
           <div className="flex-col w-[60vh]">

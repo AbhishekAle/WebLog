@@ -14,8 +14,10 @@ import { FiHelpCircle } from "react-icons/fi";
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeButton, setActiveButton] = useState("");
+  const [username, setUsername] = useState("");
   const dropdownRef = useRef(null);
   const { userData } = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -91,28 +93,22 @@ const Navbar = () => {
                         to="/account"
                         onClick={() => handleClick("dashboard")}>
                         <button
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out ${
+                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
                             activeButton === "dashboard" ? "text-[#DC143C]" : ""
                           }`}>
                           <HiViewGrid />
-                          Dashboard
-                          {activeButton === "dashboard" && (
-                            <div className="absolute top-[3.2rem]  bottom-0 left-16 sm:block hidden bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
-                          )}
+                          {userData.username}
                         </button>
                         <hr />
                       </Link>
                       <Link to={`/settings-privacy/${userData._id}`}>
                         <button
                           onClick={() => handleClick("settings")}
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out ${
+                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
                             activeButton === "settings" ? "text-[#DC143C]" : ""
                           }`}>
                           <HiCog />
                           Settings & Privacy
-                          {activeButton === "settings" && (
-                            <div className="absolute left-16 top-[6rem] bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
-                          )}
                         </button>
                       </Link>
                       <hr />
@@ -120,7 +116,7 @@ const Navbar = () => {
                       <div>
                         <button
                           onClick={() => handleClick("privacy-policy")}
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out ${
+                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
                             activeButton === "privacy-policy"
                               ? "text-[#DC143C]"
                               : ""
@@ -128,16 +124,13 @@ const Navbar = () => {
                           {" "}
                           <FiHelpCircle />
                           Help & Support
-                          {activeButton === "privacy-policy" && (
-                            <div className="absolute left-16 top-[8.7rem] bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
-                          )}
                         </button>
                       </div>
                       <hr />
 
                       <h3
                         onClick={handleLogout}
-                        className="flex items-center py-2 cursor-pointer hover:text-[#DC143C] transition duration-300 ease-in-out">
+                        className="flex items-center py-2 cursor-pointer hover:text-[#DC143C] transition duration-300 ease-in-out gap-2">
                         <LogoutOutlinedIcon />
                         Sign out
                         <hr />

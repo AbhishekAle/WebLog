@@ -13,6 +13,7 @@ connectDb();
 //middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static("public"));
 
 const port = process.env.PORT;
 app.listen(port, () => console.log(`server started at ${port}`));
