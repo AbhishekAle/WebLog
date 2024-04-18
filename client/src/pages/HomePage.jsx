@@ -97,7 +97,7 @@ const HomePage = () => {
                       <img
                         src={`http://localhost:8000/userProfile/${userData.avatar}`}
                         alt="a"
-                        className="h-8 w-8 rounded-full"
+                        className="h-10 w-10 rounded-full bg-cover"
                       />
                     </span>
                     {username}
