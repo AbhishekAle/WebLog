@@ -14,7 +14,6 @@ import { FiHelpCircle } from "react-icons/fi";
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeButton, setActiveButton] = useState("");
-  const [username, setUsername] = useState("");
   const dropdownRef = useRef(null);
   const { userData } = useSelector((state) => state.user);
 
@@ -81,30 +80,34 @@ const Navbar = () => {
           {userData ? (
             <>
               <div className="w-full">
-                <div className="flex gap-20" ref={dropdownRef}>
+                <div className="flex gap-20 items-center" ref={dropdownRef}>
                   <Link to="/about" title="Notification">
                     <span className="hover:text-[#DC143C]">
                       <NotificationsNoneIcon fontSize="large" />
                     </span>
                   </Link>
                   {showDropdown && (
-                    <div className="absolute text-black top-[50px] text-[1.1rem] bg-white border border-gray-300 rounded-md shadow-lg p-5 ">
+                    <div className="absolute text-black top-[60px] text-[1.1rem] bg-white border border-gray-300 rounded-md shadow-lg px-8 py-4 ">
                       <Link
                         to="/account"
                         onClick={() => handleClick("dashboard")}>
                         <button
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
+                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-3 ${
                             activeButton === "dashboard" ? "text-[#DC143C]" : ""
                           }`}>
-                          <HiViewGrid />
+                          <img
+                            src={`http://localhost:8000/userProfile/${userData.avatar}`}
+                            alt="a"
+                            className="h-10 w-10 rounded-full bg-cover"
+                          />
                           {userData.username}
                         </button>
                         <hr />
                       </Link>
-                      <Link to={`/settings-privacy/${userData._id}`}>
+                      <Link to="/settings-privacy">
                         <button
                           onClick={() => handleClick("settings")}
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
+                          className={`flex items-center py-2 mt-4 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
                             activeButton === "settings" ? "text-[#DC143C]" : ""
                           }`}>
                           <HiCog />
@@ -116,7 +119,7 @@ const Navbar = () => {
                       <div>
                         <button
                           onClick={() => handleClick("privacy-policy")}
-                          className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
+                          className={`flex items-center py-2 mt-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${
                             activeButton === "privacy-policy"
                               ? "text-[#DC143C]"
                               : ""
@@ -130,7 +133,7 @@ const Navbar = () => {
 
                       <h3
                         onClick={handleLogout}
-                        className="flex items-center py-2 cursor-pointer hover:text-[#DC143C] transition duration-300 ease-in-out gap-2">
+                        className="flex items-center mt-5 cursor-pointer hover:text-[#DC143C] transition duration-300 ease-in-out gap-2">
                         <LogoutOutlinedIcon />
                         Sign out
                         <hr />
@@ -141,7 +144,11 @@ const Navbar = () => {
                     className="cursor-pointer hover:text-[#DC143C] transition duration-300 ease-in-out"
                     onClick={handleDropdownToggle}
                     title="Account">
-                    <PersonIcon fontSize="large" />
+                    <img
+                      src={`http://localhost:8000/userProfile/${userData.avatar}`}
+                      alt="a"
+                      className="h-10 w-10 rounded-full bg-cover"
+                    />
                   </div>
                 </div>
               </div>

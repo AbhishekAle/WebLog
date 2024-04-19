@@ -12,6 +12,7 @@ import LandingPage from "./pages/LandingPage";
 import Articles from "./pages/Articles";
 import SingleArticle from "./components/SingleArticle";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
+import UpdateUser from "./pages/features/UpdateUser";
 
 const App = () => {
   return (
@@ -29,7 +30,8 @@ const App = () => {
           <Route element={<PrivateRoute />}>
             <Route path="/account" element={<Account />} />
             <Route path="/home" element={<HomePage />} />
-            <Route path="/settings-privacy/:id" element={<SettingsPrivacy />} />
+            <Route path="/settings-privacy" element={<SettingsPrivacy />} />
+            <Route path="/update-user/:id" element={<UpdateUser />} />
           </Route>
         </Routes>
       </BrowserRouter>
