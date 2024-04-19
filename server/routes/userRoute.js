@@ -6,6 +6,7 @@ import {
   updateUser,
   getAllUser,
   getUserById,
+  updateUserProfile,
 } from "../controllers/userController.js";
 import { verifyToken } from "../middleware/verifyUser.js";
 import multer from "multer";
@@ -31,11 +32,12 @@ const upload = multer({ storage: storage });
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
-router.patch(
-  "/update-user/:id",
+router.put("/update-user/:id", verifyToken, updateUser);
+router.put(
+  "/update-user-profile/:id",
   upload.single("avatar"),
   verifyToken,
-  updateUser
+  updateUserProfile
 );
 router.get("/users", verifyToken, getAllUser);
 router.get("/users/:id", verifyToken, getUserById);

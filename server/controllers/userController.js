@@ -71,20 +71,41 @@ export const updateUser = async (req, res, next) => {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
     const updatedUserData = await userModel.findByIdAndUpdate(
-      req.params.id, // corrected typo here
+      req.params.id,
       {
         $set: {
           username: req.body.username,
           email: req.body.email,
           phoneNumber: req.body.phoneNumber,
           password: req.body.password,
-          avatar: req.file.filename,
         },
       },
       { new: true }
     );
     const { password, ...rest } = updatedUserData._doc;
     res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//update userProfile
+export const updateUserProfile = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "User not authorized"));
+  }
+  try {
+    const updatedUserProfile = await userModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          avatar: req.file.filename,
+        },
+      },
+      { new: true }
+    );
+    const { avatar } = updatedUserProfile._doc;
+    res.status(200).json(avatar);
   } catch (error) {
     next(error);
   }

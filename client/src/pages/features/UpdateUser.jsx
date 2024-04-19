@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 const UpdateUser = () => {
   const { userData } = useSelector((state) => state.user);
   const token = userData.token;
-  const { id } = useParams();
+  const id = userData._id;
 
   const [formData, setFormdata] = useState({
     username: "",
@@ -36,8 +36,16 @@ const UpdateUser = () => {
     setFormdata({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await axios.put(`http://localhost:8000/api/update-user/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {}
   };
 
   return (
