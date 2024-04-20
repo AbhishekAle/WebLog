@@ -28,6 +28,11 @@ const SettingsPrivacy = () => {
           Authentication
         </button>
         <button
+          onClick={() => handleTabChange("delete")}
+          className={tabItemClass("delete")}>
+          Delete Account
+        </button>
+        <button
           onClick={() => handleTabChange("privacy")}
           className={tabItemClass("privacy")}>
           Privacy & Policy
@@ -36,6 +41,7 @@ const SettingsPrivacy = () => {
       <div className="flex-grow">
         {activeTab === "authentication" && <UpdateUser />}
         {activeTab === "privacy" && <div>Privacy</div>}
+        {activeTab === "delete" && <div>Delete Account</div>}
       </div>
     </div>
   );
