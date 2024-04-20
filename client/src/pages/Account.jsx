@@ -40,13 +40,21 @@ const Account = () => {
           />
         </div>
 
-        <div className=" flex absolute top-[30rem] left-40 items-center gap-10">
-          <img
-            src={`http://localhost:8000/userProfile/${avatar}`}
-            className="w-[16rem] h-[16rem] rounded-full border-t-[5px] border-r-[5px] border-l-[5px] border-white"
-          />
-          <div>
-            <h2 className="font-semibold text-2xl">{profileData.username}</h2>
+        <div className=" flex justify-between items-center px-36">
+          <div className="flex items-center gap-10">
+            <img
+              src={`http://localhost:8000/userProfile/${avatar}`}
+              className="relative top-[-3rem] w-[16rem] h-[16rem] rounded-full border-t-[5px] border-r-[5px] border-l-[5px] border-white"
+            />
+            <div className="flex flex-col">
+              <h2 className="relative top-[-3rem] font-semibold text-2xl">
+                {profileData.username}
+              </h2>
+            </div>
+          </div>
+          <div className="flex gap-4 items-center">
+            <button>Add Story</button>
+            <button>Edit</button>
           </div>
         </div>
       </div>
