@@ -32,8 +32,8 @@ const upload = multer({ storage: storage });
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
-router.put("/update-user/:id", verifyToken, updateUser);
-router.put(
+router.patch("/update-user/:id", verifyToken, updateUser);
+router.patch(
   "/update-user-profile/:id",
   upload.single("avatar"),
   verifyToken,
