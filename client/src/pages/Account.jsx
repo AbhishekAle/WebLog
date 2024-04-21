@@ -13,13 +13,14 @@ const Account = () => {
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
-  const [image, setImage] = useState();
+  const [profilePic, setProfilePic] = useState();
+  const [profileCoverPhoto, setProfileCoverPhoto] = useState();
   const email = formData.email;
   const phoneNumber = formData.phoneNumber;
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const avatar = userData.avatar;
-  console.log(avatar);
+  const coverPhoto = userData.coverPhoto;
 
   console.log(token);
   const id = userData._id;
@@ -44,13 +45,18 @@ const Account = () => {
       console.error("Error fetching user data:", error);
     }
   };
-  const handleChange = (e) => {
+  const handleChange = (e, type) => {
     if (e.target.type === "file") {
-      setImage(e.target.files[0]);
+      if (type === "avatar") {
+        setProfilePic(e.target.files[0]);
+      } else if (type === "coverPhoto") {
+        setProfileCoverPhoto(e.target.files[0]);
+      }
     } else {
       setFormData({ ...formData, [e.target.id]: e.target.value });
     }
   };
+
   const openFormModal = (id) => {
     setFormModalOpen(true);
     setSelectedId(id);
@@ -72,9 +78,10 @@ const Account = () => {
         },
       }
     );
-    if (image) {
+    if (profilePic || profileCoverPhoto) {
       const images = new FormData();
-      images.append("avatar", image);
+      images.append("avatar", profilePic);
+      images.append("coverPhoto", profileCoverPhoto);
 
       await axios.patch(
         `http://localhost:8000/api/update-user-profile/${id}`,
@@ -96,10 +103,10 @@ const Account = () => {
       <div className="flex flex-col">
         <div>
           <img
-            src={pasupatinath}
+            src={`http://localhost:8000/userProfile/${coverPhoto}`}
             alt="cover photo"
             title="Cover Photo"
-            className="w-full h-80 sm:h-96 md:h-[50vh] border-slate-200 border-2 rounded-xl"
+            className="w-full h-80 sm:h-96 md:h-[50vh] border-slate-200 border-2 rounded-xl object-fit"
           />
         </div>
 
@@ -138,9 +145,9 @@ const Account = () => {
         onRequestClose={closeFormModal}
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div onClick={closeFormModal} className="flex items-end justify-end">
-            <button className=" text-black flex justify-center items-center p-2 rounded-xl cursor-pointer  font-semibold text-xl hover:text-red-600">
+            <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
             </button>
           </div>
@@ -156,13 +163,33 @@ const Account = () => {
                     type="file"
                     accept="image"
                     className="hidden"
-                    onChange={handleChange}
+                    onChange={(e) => handleChange(e, "avatar")}
                   />
                   <img
                     src={
-                      image
-                        ? URL.createObjectURL(image)
+                      profilePic
+                        ? URL.createObjectURL(profilePic)
                         : `http://localhost:8000/userProfile/${avatar}`
+                    }
+                    alt=""
+                    title="Change profile picture"
+                    className="h-60 w-full rounded-lg cursor-pointer object-cover"
+                  />
+                </label>
+                <label className="gap-1 w-full flex flex-col">
+                  <span className="font-medium">Cover Picture:</span>
+
+                  <input
+                    type="file"
+                    accept="image"
+                    className="hidden"
+                    onChange={(e) => handleChange(e, "coverPhoto")}
+                  />
+                  <img
+                    src={
+                      profileCoverPhoto
+                        ? URL.createObjectURL(profileCoverPhoto)
+                        : `http://localhost:8000/userProfile/${coverPhoto}`
                     }
                     alt=""
                     title="Change profile picture"
