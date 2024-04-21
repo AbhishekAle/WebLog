@@ -99,7 +99,7 @@ export const updateUserProfile = async (req, res, next) => {
       req.params.id,
       {
         $set: {
-          avatar: req.body.avatar,
+          avatar: req.file.filename,
         },
       },
       { new: true }

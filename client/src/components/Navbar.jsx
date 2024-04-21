@@ -38,6 +38,7 @@ const Navbar = () => {
   };
   const handleClick = (button) => {
     setActiveButton(button);
+    setShowDropdown(false);
   };
 
   const handleLogout = async () => {
