@@ -35,7 +35,10 @@ router.post("/logout", logoutUser);
 router.patch("/update-user/:id", verifyToken, updateUser);
 router.patch(
   "/update-user-profile/:id",
-  upload.single("avatar"),
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "coverPhoto", maxCount: 1 },
+  ]),
   verifyToken,
   updateUserProfile
 );

@@ -4,6 +4,11 @@ const userSchema = mongoose.Schema(
   {
     avatar: {
       type: String,
+      sparse: true,
+    },
+    coverPhoto: {
+      type: String,
+      sparse: true,
     },
     username: {
       type: String,

@@ -95,17 +95,28 @@ export const updateUserProfile = async (req, res, next) => {
     return next(errorHandler(401, "User not authorized"));
   }
   try {
+    const avatarFile = req.files["avatar"] ? req.files["avatar"][0] : null;
+    const coverPhotoFile = req.files["coverPhoto"]
+      ? req.files["coverPhoto"][0]
+      : null;
+
+    const updateObj = {};
+    if (avatarFile) {
+      updateObj.avatar = avatarFile.filename;
+    }
+    if (coverPhotoFile) {
+      updateObj.coverPhoto = coverPhotoFile.filename;
+    }
+
     const updatedUserProfile = await userModel.findByIdAndUpdate(
       req.params.id,
-      {
-        $set: {
-          avatar: req.file.filename,
-        },
-      },
+      { $set: updateObj },
       { new: true }
     );
-    const { avatar } = updatedUserProfile._doc;
-    res.status(200).json(avatar);
+
+    const { avatar, coverPhoto } = updatedUserProfile._doc;
+
+    res.status(200).json({ avatar, coverPhoto });
   } catch (error) {
     next(error);
   }

@@ -12,6 +12,8 @@ const UpdateUser = () => {
     username: "",
     password: "",
   });
+  const username = formData.username;
+  const password = formData.password;
 
   useEffect(() => {
     fetchData();
@@ -41,7 +43,7 @@ const UpdateUser = () => {
     try {
       await axios.patch(
         `http://localhost:8000/api/update-user/${id}`,
-        formData,
+        { username, password },
         {
           headers: {
             Authorization: `Bearer ${token}`,
