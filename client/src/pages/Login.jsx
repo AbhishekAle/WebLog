@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 import axios from "axios";
 import { setUser } from "../slices/userSlice";
+import { setToken } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
@@ -23,6 +24,7 @@ const Login = () => {
       const res = await axios.post("http://localhost:8000/api/login", formData);
       const data = await res.data;
       dispatch(setUser(data));
+      dispatch(setToken(data.token));
 
       if (res) {
         navigate("/home");

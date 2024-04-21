@@ -5,9 +5,13 @@ import axios from "axios";
 import { MdAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import Modal from "react-modal";
+import { MdOutlineClose } from "react-icons/md";
+import { setUser } from "../slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
   const [image, setImage] = useState();
   const email = formData.email;
@@ -16,8 +20,10 @@ const Account = () => {
   const [selectedId, setSelectedId] = useState(null);
   const avatar = userData.avatar;
   console.log(avatar);
-  const token = userData.token;
+
+  console.log(token);
   const id = userData._id;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchData();
@@ -33,6 +39,7 @@ const Account = () => {
       });
       const data = res.data;
       setFormData(data);
+      dispatch(setUser(data));
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -79,6 +86,7 @@ const Account = () => {
           },
         }
       );
+      await fetchData();
     }
     setFormModalOpen(false);
   };
@@ -99,7 +107,7 @@ const Account = () => {
           <div className="flex items-center gap-4 sm:gap-10">
             <img
               src={`http://localhost:8000/userProfile/${avatar}`}
-              className="relative top-[-2rem] lg:w-52 w-20 lg:h-52 h-20 rounded-full border-4 border-white"
+              className="relative top-[-2rem] lg:w-52 w-20 lg:h-52 h-20 rounded-full border-4 border-white object-cover"
             />
             <div className="flex flex-col">
               <h2 className="relative top-[-2rem] font-semibold text-lg sm:text-2xl">
@@ -128,16 +136,16 @@ const Account = () => {
       <Modal
         isOpen={formModalOpen}
         onRequestClose={closeFormModal}
-        className="modal lg:w-1/2 bg-white p-4 rounded-xl shadow"
+        className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
         <div className="max-h-[80vh] overflow-y-auto">
           <div onClick={closeFormModal} className="flex items-end justify-end">
             <button className=" text-black flex justify-center items-center p-2 rounded-xl cursor-pointer  font-semibold text-xl hover:text-red-600">
-              X{" "}
+              <MdOutlineClose size={32} />
             </button>
           </div>
           <div className="flex flex-col ">
-            <div className="py-4 px-40">
+            <div className="py-4 px-5">
               <form
                 className="flex flex-col justify-center items-center gap-5"
                 onSubmit={handleSubmit}>
@@ -158,7 +166,7 @@ const Account = () => {
                     }
                     alt=""
                     title="Change profile picture"
-                    className="h-60 w-full rounded-lg cursor-pointer"
+                    className="h-60 w-full rounded-lg cursor-pointer object-cover"
                   />
                 </label>
 

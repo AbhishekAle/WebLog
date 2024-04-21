@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const UpdateUser = () => {
   const { userData } = useSelector((state) => state.user);
-  const token = userData.token;
+  const { token } = useSelector((state) => state.user);
   const id = userData._id;
 
   const [formData, setFormdata] = useState({
