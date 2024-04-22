@@ -59,20 +59,23 @@ const UpdateUser = () => {
       <form
         className="flex flex-col items-center justify-center "
         onSubmit={handleSubmit}>
-        <div className="flex flex-col w-1/2 gap-1 font-semibold">
-          <label className="pt-2">Username</label>
+        <div className="flex flex-col w-1/2 gap-1 font-medium">
+          <h2 className="pb-5 font-semibold text-xl">
+            Update Your Login Information.
+          </h2>
+          <label className="pt-2">Username:</label>
           <input
             name="username"
             type="text"
-            className="border p-2 rounded-lg"
+            className="border p-2 rounded-lg font-medium bg-white border-black outline-none"
             onChange={handleChange}
             value={formData.username}
           />
-          <label className="pt-2">Password</label>
+          <label className="pt-2">Password:</label>
           <input
             name="password"
             type="text"
-            className="border p-2 rounded-lg"
+            className="border p-2 rounded-lg font-medium bg-white border-black outline-none"
             onChange={handleChange}
           />
         </div>

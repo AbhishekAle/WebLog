@@ -20,7 +20,7 @@ const SettingsPrivacy = () => {
     }`;
 
   return (
-    <div className="px-40 py-10 flex">
+    <div className="px-40 py-10 flex bg-slate-50 h-[94.2vh]">
       <div className="flex flex-col mt-8 gap-5 font-semibold">
         <button
           onClick={() => handleTabChange("authentication")}

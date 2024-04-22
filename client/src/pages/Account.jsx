@@ -8,6 +8,8 @@ import Modal from "react-modal";
 import { MdOutlineClose } from "react-icons/md";
 import { setUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
+import Articles from "./Articles";
+import Posts from "./features/Posts";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
@@ -15,6 +17,7 @@ const Account = () => {
   const [formData, setFormData] = useState({});
   const [profilePic, setProfilePic] = useState();
   const [profileCoverPhoto, setProfileCoverPhoto] = useState();
+  const [activeTab, setActiveTab] = useState("posts");
   const email = formData.email;
   const phoneNumber = formData.phoneNumber;
   const [formModalOpen, setFormModalOpen] = useState(false);
@@ -25,6 +28,17 @@ const Account = () => {
   console.log(token);
   const id = userData._id;
   const dispatch = useDispatch();
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+  };
+
+  const tabItemClass = (tabName) =>
+    `cursor-pointer ${
+      activeTab === tabName
+        ? "border-b-2 px-1 border-[#DC143C] text-[#DC143C]"
+        : "hover:text-[#DC143C]"
+    }`;
 
   useEffect(() => {
     fetchData();
@@ -99,7 +113,7 @@ const Account = () => {
   };
 
   return (
-    <div className="w-full px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 py-1">
+    <div className="w-full px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 py-1 bg-slate-50">
       <div className="flex flex-col">
         <div>
           <img
@@ -123,20 +137,54 @@ const Account = () => {
             </div>
           </div>
           <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
-            <button className="bg-red-500 p-2 rounded-lg text-white font-medium text-base sm:text-lg hover:bg-red-400 flex items-center justify-center">
+            <button className="bg-[#DC143C] p-2 rounded-lg text-white font-medium text-md sm:text-lg hover:bg-red-400 flex items-center justify-center">
               <span>
                 <MdAdd />
               </span>
               Add Story
             </button>
             <button
-              className="font-medium text-base sm:text-lg hover:text-red-400 flex items-center justify-center gap-1"
+              className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
               onClick={openFormModal}>
               <span>
                 <FiEdit />
               </span>
               Edit
             </button>
+          </div>
+        </div>
+        <hr className="border-black"></hr>
+        <div className="w-full">
+          <div className="flex  gap-10 py-3 items-center justify-center bg-white">
+            <button
+              onClick={() => handleTabChange("posts")}
+              className={`${tabItemClass("posts")} font-medium text-lg`}>
+              Posts
+            </button>
+            <button
+              onClick={() => handleTabChange("articles")}
+              className={`${tabItemClass("articles")} font-medium text-lg`}>
+              Articles
+            </button>
+            <button
+              onClick={() => handleTabChange("videos")}
+              className={`${tabItemClass("videos")} font-medium text-lg`}>
+              Videos
+            </button>
+          </div>
+          <hr className="border-black pb-3"></hr>
+          <div className="flex-grow">
+            {activeTab === "posts" && (
+              <div>
+                <Posts />
+              </div>
+            )}
+            {activeTab === "articles" && (
+              <div className="">
+                <Articles />
+              </div>
+            )}
+            {activeTab === "videos" && <div>Videos</div>}
           </div>
         </div>
       </div>
@@ -146,7 +194,10 @@ const Account = () => {
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
-          <div onClick={closeFormModal} className="flex items-end justify-end">
+          <div
+            onClick={closeFormModal}
+            className="flex items-end justify-between px-5">
+            <span className="font-bold text-xl">Edit Profile</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
             </button>
@@ -192,7 +243,7 @@ const Account = () => {
                         : `http://localhost:8000/userProfile/${coverPhoto}`
                     }
                     alt=""
-                    title="Change profile picture"
+                    title="Change cover picture"
                     className="h-60 w-full rounded-lg cursor-pointer object-cover"
                   />
                 </label>
