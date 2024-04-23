@@ -5,8 +5,14 @@ const postSchema = mongoose.Schema(
     description: {
       type: String,
     },
-    images: {
+    posts: [
+      {
+        type: String,
+      },
+    ],
+    user: {
       type: String,
+      required: true,
     },
   },
   { timestamps: true }
