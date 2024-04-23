@@ -1,54 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { FaUserFriends, FaNewspaper } from "react-icons/fa";
 import { TbPhoto } from "react-icons/tb";
-import { MdCalendarMonth } from "react-icons/md";
+import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
 import { IoMdPhotos } from "react-icons/io";
 import { useSelector } from "react-redux";
+import Modal from "react-modal";
 import PersonIcon from "@mui/icons-material/Person";
 import { Link } from "react-router-dom";
-
-const data = [
-  {
-    title: "Banner 1",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 2",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 3",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 4",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 5",
-    imageMobile: "https://api.slingacademy.com/v1/sample-data/photos",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-];
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [stories, setStories] = useState(data);
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState();
+  const [profileCoverPhoto, setProfileCoverPhoto] = useState();
   const { userData } = useSelector((state) => state.user);
   const avatar = userData.avatar;
 
@@ -58,6 +24,9 @@ const Posts = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   const formatDate = (date) => {
     const options = {
@@ -73,6 +42,14 @@ const Posts = () => {
 
   const handleClick = (button) => {
     setActiveButton(button);
+  };
+  const openPostModal = () => {
+    setPostModalOpen(true);
+    setSelectedId(id);
+  };
+  const closePostModal = () => {
+    setPostModalOpen(false);
+    setSelectedId(null);
   };
 
   return (
@@ -124,7 +101,8 @@ const Posts = () => {
               <input
                 type="text"
                 placeholder="What's on your mind.."
-                className="border w-4/5 p-3 rounded-2xl"
+                className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
+                onClick={openPostModal}
               />
             </form>
             <hr className="border border-white" />
@@ -142,19 +120,7 @@ const Posts = () => {
             </div>
           </div>
         </div>
-        <div className="py-4">
-          <div className="flex flex-col justify-center items-center gap-2">
-            {stories.map((story, index) => (
-              <span key={index} className="  rounded-2xl">
-                <img
-                  src={story.imageDesktop}
-                  alt={`Story ${index}`}
-                  className="w-full object-cover rounded-2xl h-[60vh]"
-                />
-              </span>
-            ))}
-          </div>
-        </div>
+        <div className="py-4"></div>
       </div>
       <div className="sticky top-20 h-fit p-2 bg-gray-200 rounded-lg shadow-lg">
         <div className="flex items-center gap-2">
@@ -164,6 +130,54 @@ const Posts = () => {
           {formatDate(currentTime)}
         </div>
       </div>
+      <Modal
+        isOpen={postModalOpen}
+        onRequestClose={closePostModal}
+        className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
+        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
+        <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
+          <div
+            onClick={closePostModal}
+            className="flex items-end justify-between px-5">
+            <span className="font-bold text-xl">Edit Profile</span>
+            <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
+              <MdOutlineClose size={32} />
+            </button>
+          </div>
+          <div className="flex flex-col ">
+            <div className="py-4 px-5">
+              <form
+                className="flex flex-col justify-center items-center gap-5"
+                onSubmit={handleSubmit}>
+                <div className="w-full flex flex-col">
+                  <label className="font-medium">Caption:</label>
+                  <input
+                    id="caption"
+                    type="text"
+                    className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                  />
+                </div>
+                <label className="gap-1 w-full flex flex-col">
+                  <span className="font-medium">Photos:</span>
+
+                  <input type="file" accept="image" className="hidden" />
+                  <img
+                    src={profilePic ? URL.createObjectURL(profilePic) : ``}
+                    alt=""
+                    title="Upload Photo"
+                    className="h-60 w-full rounded-lg cursor-pointer object-cover"
+                  />
+                </label>
+                <div className="">
+                  <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
+                    Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
