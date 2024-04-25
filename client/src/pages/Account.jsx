@@ -25,7 +25,6 @@ const Account = () => {
   const avatar = userData.avatar;
   const coverPhoto = userData.coverPhoto;
 
-  console.log(token);
   const id = userData._id;
   const dispatch = useDispatch();
 

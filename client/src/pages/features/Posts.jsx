@@ -6,26 +6,70 @@ import { BiSolidMessageDetail } from "react-icons/bi";
 import { IoMdPhotos } from "react-icons/io";
 import { useSelector } from "react-redux";
 import Modal from "react-modal";
-import PersonIcon from "@mui/icons-material/Person";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState();
-  const [profileCoverPhoto, setProfileCoverPhoto] = useState();
+  const [caption, setCaption] = useState("");
+  const [pictures, setPictures] = useState([]);
+  const [selectedId, setSelectedId] = useState();
   const { userData } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
-
+  const id = userData._id;
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8000/api/getposts/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = res.data;
+        setCaption(data[0].description);
+        setPictures(data[0].posts);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleCaptionChange = (e) => {
+    setCaption(e.target.value);
+  };
+
+  const handleImageChange = (e) => {
+    setPictures(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    try {
+      const formData = new FormData();
+      formData.append("posts", pictures);
+      formData.append("caption", caption);
+      await axios.post(`http://localhost:8000/api/createpost/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const formatDate = (date) => {
@@ -120,7 +164,18 @@ const Posts = () => {
             </div>
           </div>
         </div>
-        <div className="py-4"></div>
+        <div className="py-4">
+          {pictures.map((index) => (
+            <div key={index}>
+              <p>{caption[index]}</p>
+              <img
+                src={`http://localhost:8000/getposts/${id}`}
+                className="lg:w-14 w-2 lg:h-14 h-2 rounded-full border-4 border-white object-cover"
+                alt="Post Image"
+              />
+            </div>
+          ))}
+        </div>
       </div>
       <div className="sticky top-20 h-fit p-2 bg-gray-200 rounded-lg shadow-lg">
         <div className="flex items-center gap-2">
@@ -155,14 +210,19 @@ const Posts = () => {
                     id="caption"
                     type="text"
                     className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                    onChange={handleCaptionChange}
                   />
                 </div>
                 <label className="gap-1 w-full flex flex-col">
                   <span className="font-medium">Photos:</span>
 
-                  <input type="file" accept="image" className="hidden" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
                   <img
-                    src={profilePic ? URL.createObjectURL(profilePic) : ``}
+                    src={""}
                     alt=""
                     title="Upload Photo"
                     className="h-60 w-full rounded-lg cursor-pointer object-cover"

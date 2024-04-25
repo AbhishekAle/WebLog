@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost } from "../controllers/postController.js";
+import { createPost, getPostsByUser } from "../controllers/postController.js";
 import { verifyToken } from "../middleware/verifyUser.js";
 import multer from "multer";
 import path, { dirname } from "path";
@@ -26,5 +26,6 @@ router.post(
   upload.array("posts", 5), // Upload images with a maximum count of 5
   createPost
 );
+router.get("/getposts/:id", verifyToken, getPostsByUser);
 
 export default router;
