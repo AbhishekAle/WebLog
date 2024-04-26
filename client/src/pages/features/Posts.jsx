@@ -206,7 +206,7 @@ const Posts = () => {
               </span>
               <input
                 type="text"
-                placeholder="Share Your Thought.."
+                placeholder="Share Your Thought..."
                 className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
                 onClick={openPostModal}
               />
