@@ -258,7 +258,7 @@ const Posts = () => {
                       key={index}
                       src={`http://localhost:8000/userPosts/${postImage}`}
                       alt={`Post ${index + 1}`}
-                      className="w-full h-[26rem] rounded-xl"
+                      className="w-full h-[26rem] rounded-xl object-cover"
                     />
                   ))}
                 </div>
