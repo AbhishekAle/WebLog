@@ -13,3 +13,9 @@
         scrollbar-width: none;  /* Firefox */
   }
 }
+
+.shadow-custom {
+    /* Adjust the shadow values as needed */
+    box-shadow: 0 4px 6px -1px rgb(0, 15, 39), 0 2px 4px -1px rgb(59, 131, 246);
+  }
+  

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { LiaCopyrightSolid } from "react-icons/lia";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaUserFriends } from "react-icons/fa";
+import { FaRegComment, FaUserFriends } from "react-icons/fa";
 import { FaNewspaper } from "react-icons/fa6";
 import { FaBookmark } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
@@ -12,7 +12,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import { IoMdPhotos } from "react-icons/io";
 import { MdCalendarMonth } from "react-icons/md";
 import { useSelector } from "react-redux";
-import pasupatinath from "../assets/pasupatinath.jpg";
+import { SlLike } from "react-icons/sl";
+import { TbShare3 } from "react-icons/tb";
+import axios from "axios";
 
 const data = [
   {
@@ -55,15 +57,36 @@ const HomePage = () => {
   const [stories, setStories] = useState(data);
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [postsData, setPostsData] = useState([]);
   const { userData } = useSelector((state) => state.user);
   const username = userData.username;
-
+  const { token } = useSelector((state) => state.user);
+  const avatar = userData.avatar;
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [token]);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/get-all-posts", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = res.data;
+      setPostsData(data);
+      setCreatedAt(data[0].createdAt);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const formatDate = (date) => {
     const options = {
@@ -76,15 +99,63 @@ const HomePage = () => {
     };
     return new Intl.DateTimeFormat("en-US", options).format(date);
   };
+  const postDate = (createdAt) => {
+    const currentTime = new Date();
+    const postTime = new Date(createdAt);
+    const timeDifference = Math.abs(currentTime - postTime);
+    const secondsDifference = Math.floor(timeDifference / 1000);
+    const minutesDifference = Math.floor(secondsDifference / 60);
+    const hoursDifference = Math.floor(minutesDifference / 60);
+    const daysDifference = Math.floor(hoursDifference / 24);
+    const weeksDifference = Math.floor(daysDifference / 7);
+    const monthsDifference = Math.floor(daysDifference / 30); // Approximation for months
+    const yearsDifference = Math.floor(daysDifference / 365); // Approximation for years
+
+    if (yearsDifference > 0) {
+      return `${yearsDifference} ${
+        yearsDifference === 1 ? "year" : "years"
+      } ago`;
+    } else if (monthsDifference > 0) {
+      return `${monthsDifference} ${
+        monthsDifference === 1 ? "month" : "months"
+      } ago`;
+    } else if (weeksDifference > 0) {
+      return `${weeksDifference} ${
+        weeksDifference === 1 ? "week" : "weeks"
+      } ago`;
+    } else if (daysDifference > 0) {
+      return `${daysDifference} ${daysDifference === 1 ? "day" : "days"} ago`;
+    } else if (hoursDifference > 0) {
+      return `${hoursDifference} ${
+        hoursDifference === 1 ? "hour" : "hours"
+      } ago`;
+    } else if (minutesDifference > 0) {
+      return (
+        <>
+          {`${minutesDifference} ${
+            minutesDifference === 1 ? "minute" : "minutes"
+          } ago`}
+        </>
+      );
+    } else {
+      return (
+        <>
+          {`${secondsDifference} ${
+            secondsDifference === 1 ? "second" : "seconds"
+          } ago`}
+        </>
+      );
+    }
+  };
 
   const handleClick = (button) => {
     setActiveButton(button);
   };
 
   return (
-    <div className="flex flex-row w-full gap-20 py-2 bg-slate-50">
-      <div className="w- flex pl-10">
-        <div className="sticky top-20 h-[60vh] bg-gray-200 rounded-2xl p-8 flex flex-col justify-between">
+    <div className="flex flex-row w-full gap-20 py-2 px-20 bg-slate-50">
+      <div className="mx-auto">
+        <div className="sticky top-20 h-[60vh] bg-[#efecd3] rounded-2xl p-8 flex flex-col justify-between">
           <div className="flex flex-col">
             <ul className="flex flex-col gap-5 px-2 ">
               <Link to="/account" onClick={() => handleClick("dashboard")}>
@@ -94,7 +165,7 @@ const HomePage = () => {
                   }`}>
                   <span className="flex items-center text-[#DC143C]">
                     <img
-                      src={`http://localhost:8000/userProfile/${userData.avatar}`}
+                      src={`http://localhost:8000/userProfile/${avatar}`}
                       alt="a"
                       className="h-10 w-10 rounded-full bg-cover"
                     />
@@ -220,10 +291,14 @@ const HomePage = () => {
           ))}
         </div>
         <div className="flex  justify-center py-4">
-          <div className="border-2  w-full bg-gray-200 rounded-xl">
+          <div className="w-full bg-[#efecd3] rounded-xl">
             <form className="flex items-center justify-center gap-4 p-4">
-              <span className="border p-3 rounded-full text-[#DC143C] bg-white">
-                <PersonIcon />
+              <span className="p-1 rounded-full text-[#DC143C] bg-white">
+                <img
+                  src={`http://localhost:8000/userProfile/${avatar}`}
+                  alt="a"
+                  className="h-10 w-10 rounded-full bg-cover"
+                />
               </span>
               <input
                 type="text"
@@ -251,20 +326,68 @@ const HomePage = () => {
           </div>
         </div>
         <div className="py-4">
-          <div className="flex flex-col justify-center items-center gap-2">
-            {stories.map((story, index) => (
-              <span key={index} className="  rounded-2xl">
-                <img
-                  src={story.imageDesktop}
-                  alt={`Story ${index}`}
-                  className="w-full object-cover rounded-2xl h-[60vh] "
-                />
-              </span>
+          <div className="flex flex-col-reverse gap-5 ">
+            {postsData.map((post) => (
+              <div
+                key={post._id}
+                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
+                <div className="flex  items-center gap-2">
+                  <div className="flex">
+                    <img
+                      src={`http://localhost:8000/userProfile/${avatar}`}
+                      className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col ">
+                    <h2 className="font-semibold text-xl">{username}</h2>
+                    <span className="flex items-center text-sm">
+                      posted {postDate(post.createdAt)}.
+                    </span>
+                  </div>
+                </div>
+                <hr className="border-white"></hr>
+                <div className="px-5">
+                  <h3 className="font-medium">{post.description}</h3>
+                </div>
+                <div className="flex gap-5">
+                  {post.posts.map((postImage, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8000/userPosts/${postImage}`}
+                      alt={`Post ${index + 1}`}
+                      className="w-full h-[26rem] rounded-xl"
+                    />
+                  ))}
+                </div>
+                <hr className="border-white"></hr>
+                <div className="flex justify-evenly">
+                  <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
+                    <span className="text-black font-medium">100K</span>
+                    <SlLike size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1K</span>
+                    <FaRegComment size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1M</span>
+                    <TbShare3 size={28} />
+                  </button>
+                </div>
+              </div>
             ))}
+          </div>
+          <div className="flex justify-center mt-10 text-xl font-semibold">
+            <p>
+              <span>&larr;</span>---------- End Of Posts ----------
+              <span>&rarr;</span>
+            </p>
           </div>
         </div>
       </div>
-      <div className=" sticky top-20 h-fit  mx-10 p-2 bg-gray-200 rounded-lg shadow-lg">
+      <div className=" sticky top-20 h-fit  mx-10 p-2 bg-[#efecd3] rounded-lg shadow-lg">
         <div className="flex items-center gap-2">
           <span className="text-2xl text-[#DC143C]">
             <MdCalendarMonth />

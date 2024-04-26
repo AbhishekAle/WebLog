@@ -7,69 +7,85 @@ import { IoMdPhotos } from "react-icons/io";
 import { useSelector } from "react-redux";
 import Modal from "react-modal";
 import axios from "axios";
+import uploadPhotos from "../../assets/uploadPhotos.png";
+import { SlLike } from "react-icons/sl";
+import { FaRegComment } from "react-icons/fa";
+import { TbShare3 } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
-  const [caption, setCaption] = useState("");
-  const [pictures, setPictures] = useState([]);
-  const [selectedId, setSelectedId] = useState();
+  const [postsData, setPostsData] = useState([]);
+  const [createdPost, setCreatedPost] = useState([
+    { description: "", posts: [] },
+  ]);
+
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
+  const username = userData.username;
   const id = userData._id;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:8000/api/getposts/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = res.data;
-        setCaption(data[0].description);
-        setPictures(data[0].posts);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
-  }, []);
+  }, [id, token]);
 
-  const handleCaptionChange = (e) => {
-    setCaption(e.target.value);
-  };
-
-  const handleImageChange = (e) => {
-    setPictures(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const fetchData = async () => {
     try {
-      const formData = new FormData();
-      formData.append("posts", pictures);
-      formData.append("caption", caption);
-      await axios.post(`http://localhost:8000/api/createpost/${id}`, formData, {
+      const res = await axios.get(`http://localhost:8000/api/getposts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      const data = res.data;
+      setPostsData(data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
+  };
+
+  const handleChange = (e) => {
+    if (e.target.type === "file") {
+      const file = e.target.files[0];
+      setCreatedPost((prevPost) => ({ ...prevPost, posts: file }));
+    } else {
+      const { name, value } = e.target;
+      setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append("description", createdPost.description);
+      formData.append("posts", createdPost.posts);
+
+      await axios.post(`http://localhost:8000/api/createpost/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Post created successfully");
+      // Clear the createdPost state or perform any other necessary actions
+      setCreatedPost({ description: "", posts: null });
+    } catch (error) {
+      console.error("Error creating post:", error);
+      // Handle error appropriately, e.g., show a notification to the user
+    }
+    await fetchData();
+    setPostModalOpen(false);
   };
 
   const formatDate = (date) => {
@@ -89,17 +105,63 @@ const Posts = () => {
   };
   const openPostModal = () => {
     setPostModalOpen(true);
-    setSelectedId(id);
   };
   const closePostModal = () => {
     setPostModalOpen(false);
-    setSelectedId(null);
+  };
+  const postDate = (createdAt) => {
+    const currentTime = new Date();
+    const postTime = new Date(createdAt);
+    const timeDifference = Math.abs(currentTime - postTime);
+    const secondsDifference = Math.floor(timeDifference / 1000);
+    const minutesDifference = Math.floor(secondsDifference / 60);
+    const hoursDifference = Math.floor(minutesDifference / 60);
+    const daysDifference = Math.floor(hoursDifference / 24);
+    const weeksDifference = Math.floor(daysDifference / 7);
+    const monthsDifference = Math.floor(daysDifference / 30); // Approximation for months
+    const yearsDifference = Math.floor(daysDifference / 365); // Approximation for years
+
+    if (yearsDifference > 0) {
+      return `${yearsDifference} ${
+        yearsDifference === 1 ? "year" : "years"
+      } ago`;
+    } else if (monthsDifference > 0) {
+      return `${monthsDifference} ${
+        monthsDifference === 1 ? "month" : "months"
+      } ago`;
+    } else if (weeksDifference > 0) {
+      return `${weeksDifference} ${
+        weeksDifference === 1 ? "week" : "weeks"
+      } ago`;
+    } else if (daysDifference > 0) {
+      return `${daysDifference} ${daysDifference === 1 ? "day" : "days"} ago`;
+    } else if (hoursDifference > 0) {
+      return `${hoursDifference} ${
+        hoursDifference === 1 ? "hour" : "hours"
+      } ago`;
+    } else if (minutesDifference > 0) {
+      return (
+        <>
+          {`${minutesDifference} ${
+            minutesDifference === 1 ? "minute" : "minutes"
+          } ago`}
+        </>
+      );
+    } else {
+      return (
+        <>
+          {`${secondsDifference} ${
+            secondsDifference === 1 ? "second" : "seconds"
+          } ago`}
+        </>
+      );
+    }
   };
 
   return (
     <div className="flex flex-col sm:flex-row w-full gap-20 py-2 bg-slate-50">
       <div className="w-full sm:w-auto flex justify-center sm:pl-10">
-        <div className="sticky top-20 h-fit bg-gray-200 rounded-2xl p-8 flex flex-col justify-between">
+        <div className="sticky top-20 h-fit bg-[#efecd3] rounded-2xl p-8 flex flex-col justify-between">
           <div className="flex flex-col ">
             <ul className="flex flex-row lg:flex-col gap-5 px-2">
               <li
@@ -134,17 +196,17 @@ const Posts = () => {
 
       <div className="w-full sm:w-1/2 mx-auto">
         <div className="flex flex-col py-4">
-          <div className="border-2 w-full bg-gray-200 rounded-xl">
+          <div className=" w-full bg-[#efecd3] rounded-xl">
             <form className="flex items-center justify-center gap-4 p-4">
               <span className=" p-3 rounded-full text-[#DC143C]">
                 <img
                   src={`http://localhost:8000/userProfile/${avatar}`}
-                  className="lg:w-14 w-2 lg:h-14 h-2 rounded-full border-4 border-white object-cover"
+                  className="lg:w-14 w-10 lg:h-14 h-10 rounded-full border-4 border-white object-cover"
                 />
               </span>
               <input
                 type="text"
-                placeholder="What's on your mind.."
+                placeholder="Share Your Thought.."
                 className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
                 onClick={openPostModal}
               />
@@ -152,7 +214,9 @@ const Posts = () => {
             <hr className="border border-white" />
             <div className="flex justify-center p-4">
               <ul className="flex gap-20">
-                <li className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium">
+                <li
+                  className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium"
+                  onClick={openPostModal}>
                   <IoMdPhotos />
                   <span>Photo/Video</span>
                 </li>
@@ -165,19 +229,68 @@ const Posts = () => {
           </div>
         </div>
         <div className="py-4">
-          {pictures.map((index) => (
-            <div key={index}>
-              <p>{caption[index]}</p>
-              <img
-                src={`http://localhost:8000/getposts/${id}`}
-                className="lg:w-14 w-2 lg:h-14 h-2 rounded-full border-4 border-white object-cover"
-                alt="Post Image"
-              />
-            </div>
-          ))}
+          <div className="flex flex-col-reverse gap-5 ">
+            {postsData.map((post) => (
+              <div
+                key={post._id}
+                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
+                <div className="flex  items-center gap-2">
+                  <div className="flex">
+                    <img
+                      src={`http://localhost:8000/userProfile/${avatar}`}
+                      className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col ">
+                    <h2 className="font-semibold text-xl">{username}</h2>
+                    <span className="flex items-center text-sm">
+                      posted {postDate(post.createdAt)}.
+                    </span>
+                  </div>
+                </div>
+                <hr className="border-white"></hr>
+                <div className="px-5">
+                  <h3 className="font-medium">{post.description}</h3>
+                </div>
+                <div className="flex gap-5">
+                  {post.posts.map((postImage, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8000/userPosts/${postImage}`}
+                      alt={`Post ${index + 1}`}
+                      className="w-full h-[26rem] rounded-xl"
+                    />
+                  ))}
+                </div>
+                <hr className="border-white"></hr>
+                <div className="flex justify-evenly">
+                  <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
+                    <span className="text-black font-medium">100K</span>
+                    <SlLike size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1K</span>
+                    <FaRegComment size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1M</span>
+                    <TbShare3 size={28} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center mt-10 text-xl font-semibold">
+            <p>
+              <span>&larr;</span>---------- End Of Posts ----------
+              <span>&rarr;</span>
+            </p>
+          </div>
         </div>
       </div>
-      <div className="sticky top-20 h-fit p-2 bg-gray-200 rounded-lg shadow-lg">
+      <div className="sticky top-20 h-fit p-2 bg-[#efecd3] rounded-lg shadow-lg">
         <div className="flex items-center gap-2">
           <span className="text-2xl text-[#DC143C]">
             <MdCalendarMonth />
@@ -194,7 +307,7 @@ const Posts = () => {
           <div
             onClick={closePostModal}
             className="flex items-end justify-between px-5">
-            <span className="font-bold text-xl">Edit Profile</span>
+            <span className="font-bold text-xl">Create Post</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
             </button>
@@ -205,32 +318,32 @@ const Posts = () => {
                 className="flex flex-col justify-center items-center gap-5"
                 onSubmit={handleSubmit}>
                 <div className="w-full flex flex-col">
-                  <label className="font-medium">Caption:</label>
                   <input
-                    id="caption"
+                    name="description"
                     type="text"
+                    placeholder="Share Your Thoughts..."
                     className="border-2 border-black p-2 rounded-lg outline-none select-none"
-                    onChange={handleCaptionChange}
+                    onChange={handleChange}
                   />
                 </div>
                 <label className="gap-1 w-full flex flex-col">
-                  <span className="font-medium">Photos:</span>
+                  <span className="font-medium">Media:</span>
 
                   <input
                     type="file"
                     className="hidden"
-                    onChange={handleImageChange}
+                    onChange={handleChange}
                   />
                   <img
-                    src={""}
+                    src={uploadPhotos}
                     alt=""
-                    title="Upload Photo"
-                    className="h-60 w-full rounded-lg cursor-pointer object-cover"
+                    title="Upload Photo/Videos"
+                    className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
                   />
                 </label>
                 <div className="">
                   <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
-                    Update
+                    Create Post
                   </button>
                 </div>
               </form>
