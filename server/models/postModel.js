@@ -4,10 +4,12 @@ const postSchema = mongoose.Schema(
   {
     description: {
       type: String,
+      sparse: true,
     },
     posts: [
       {
         type: String,
+        sparse: true,
       },
     ],
     user: {

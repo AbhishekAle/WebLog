@@ -1,5 +1,9 @@
 import express from "express";
-import { createPost, getPostsByUser } from "../controllers/postController.js";
+import {
+  createPost,
+  getAllPosts,
+  getPostsByUser,
+} from "../controllers/postController.js";
 import { verifyToken } from "../middleware/verifyUser.js";
 import multer from "multer";
 import path, { dirname } from "path";
@@ -27,5 +31,6 @@ router.post(
   createPost
 );
 router.get("/getposts/:id", verifyToken, getPostsByUser);
+router.get("/get-all-posts", verifyToken, getAllPosts);
 
 export default router;
