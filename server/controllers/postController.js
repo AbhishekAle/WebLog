@@ -60,3 +60,43 @@ export const getAllPosts = async (req, res, next) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+//post edit controller
+export const editPost = async (req, res, next) => {
+  const post = await postModel.findById(req.params.id);
+  if (!post) {
+    return next(errorHandler(401, "post not found"));
+  }
+  if (req.user.id !== post.user) {
+    return next(errorHandler(401, "you can only update your post"));
+  }
+  try {
+    const editPost = await postModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          description: req.body.description,
+        },
+      },
+      { new: true }
+    );
+    const { description } = editPost._doc;
+    res.status(200).json(description);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//delete post controller
+export const deletePost = async (req, res, next) => {
+  const post = await postModel.findById(req.params.id);
+  if (!post) {
+    return next(errorHandler(404, "post not found"));
+  }
+  try {
+    await postModel.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

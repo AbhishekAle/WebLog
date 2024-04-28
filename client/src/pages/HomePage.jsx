@@ -82,7 +82,6 @@ const HomePage = () => {
       });
       const data = res.data;
       setPostsData(data);
-      setCreatedAt(data[0].createdAt);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

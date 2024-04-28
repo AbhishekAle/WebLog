@@ -1,6 +1,8 @@
 import express from "express";
 import {
   createPost,
+  deletePost,
+  editPost,
   getAllPosts,
   getPostsByUser,
 } from "../controllers/postController.js";
@@ -32,5 +34,7 @@ router.post(
 );
 router.get("/getposts/:id", verifyToken, getPostsByUser);
 router.get("/get-all-posts", verifyToken, getAllPosts);
+router.put("/edit-post/:id", verifyToken, editPost);
+router.delete("/delete-post/:id", verifyToken, deletePost);
 
 export default router;
