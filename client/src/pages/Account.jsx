@@ -10,7 +10,6 @@ import { setUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
 import Articles from "./Articles";
 import Posts from "./features/Posts";
-import { useParams } from "react-router-dom";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
@@ -26,7 +25,6 @@ const Account = () => {
   const avatar = userData.avatar;
   const coverPhoto = userData.coverPhoto;
   const userId = userData._id;
-  console.log(userId);
   const dispatch = useDispatch();
 
   const handleTabChange = (tabName) => {

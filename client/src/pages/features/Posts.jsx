@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaUserFriends, FaNewspaper } from "react-icons/fa";
 import { TbPhoto } from "react-icons/tb";
 import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
@@ -11,27 +11,48 @@ import uploadPhotos from "../../assets/uploadPhotos.png";
 import { SlLike } from "react-icons/sl";
 import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Posts = () => {
+  const postDropdownRef = useRef(null);
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [postsData, setPostsData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [createdPost, setCreatedPost] = useState([
-    { description: "", posts: [] },
-  ]);
-  const [postId, setPostId] = useState("");
+  const [createdPost, setCreatedPost] = useState({
+    description: "",
+    posts: null,
+  });
+  const [selectedPostId, setSelectedPostId] = useState(null);
+
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
+
   const avatar = userData.avatar;
   const username = userData.username;
   const id = userData._id;
-  const coverPhoto = userData.avatar;
 
-  const toggleDropdown = () => {
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        postDropdownRef.current &&
+        !postDropdownRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = (postId) => {
     setIsOpen(!isOpen);
+    setSelectedPostId(postId);
   };
 
   useEffect(() => {
@@ -53,8 +74,8 @@ const Posts = () => {
         },
       });
       const data = res.data;
+
       setPostsData(data);
-      setPostId(data[0]._id);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -107,12 +128,15 @@ const Posts = () => {
   const handleClick = (button) => {
     setActiveButton(button);
   };
+
   const openPostModal = () => {
     setPostModalOpen(true);
   };
+
   const closePostModal = () => {
     setPostModalOpen(false);
   };
+
   const postDate = (createdAt) => {
     const currentTime = new Date();
     const postTime = new Date(createdAt);
@@ -164,6 +188,7 @@ const Posts = () => {
 
   return (
     <div className="flex flex-col sm:flex-row w-full gap-20 py-2 bg-slate-50">
+      {/* Left Sidebar */}
       <div className="w-full sm:w-auto flex justify-center sm:pl-10">
         <div className="sticky top-20 h-fit bg-[#efecd3] rounded-2xl p-8 flex flex-col justify-between">
           <div className="flex flex-col ">
@@ -184,7 +209,6 @@ const Posts = () => {
                 <TbPhoto className="text-[#DC143C]" />
                 <span>Photos</span>
               </li>
-
               <li
                 className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                   activeButton === "messages" ? "text-[#DC143C]" : ""
@@ -198,6 +222,7 @@ const Posts = () => {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="w-full sm:w-1/2 mx-auto">
         <div className="flex flex-col py-4">
           <div className=" w-full bg-[#efecd3] rounded-xl">
@@ -253,14 +278,14 @@ const Posts = () => {
                     </div>
                   </div>
                   <div>
-                    <button onClick={toggleDropdown}>...</button>{" "}
-                    {isOpen && (
-                      <div className="dropdown-content">
-                        <li>Option 1</li>
-                        <li>Option 2</li>
-                        <li>Option 3</li>
-                      </div>
-                    )}
+                    <button onClick={() => toggleDropdown(post._id)}>
+                      ...
+                      {selectedPostId === post._id && (
+                        <div ref={postDropdownRef} className="dropdown-content">
+                          <h1>hello</h1>
+                        </div>
+                      )}
+                    </button>
                   </div>
                 </div>
                 <hr className="border-white"></hr>
@@ -305,6 +330,7 @@ const Posts = () => {
           </div>
         </div>
       </div>
+      {/* Right Sidebar */}
       <div className="sticky top-20 h-fit p-2 bg-[#efecd3] rounded-lg shadow-lg">
         <div className="flex items-center gap-2">
           <span className="text-2xl text-[#DC143C]">
@@ -313,11 +339,13 @@ const Posts = () => {
           {formatDate(currentTime)}
         </div>
       </div>
+      {/* Post Modal */}
       <Modal
         isOpen={postModalOpen}
         onRequestClose={closePostModal}
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
-        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
+        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
+        contentLabel="Create Post Modal">
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div
             onClick={closePostModal}

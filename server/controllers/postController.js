@@ -75,7 +75,7 @@ export const editPost = async (req, res, next) => {
       req.params.id,
       {
         $set: {
-          description: req.body.description,
+          description: req.body.description || null,
         },
       },
       { new: true }
