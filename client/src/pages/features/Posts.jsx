@@ -21,12 +21,13 @@ const Posts = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [postsData, setPostsData] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [createdPost, setCreatedPost] = useState({
     description: "",
     posts: null,
   });
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  console.log(selectedPostId);
 
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
@@ -34,27 +35,6 @@ const Posts = () => {
   const avatar = userData.avatar;
   const username = userData.username;
   const id = userData._id;
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        postDropdownRef.current &&
-        !postDropdownRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
-  const toggleDropdown = (postId) => {
-    setIsOpen(!isOpen);
-    setSelectedPostId(postId);
-  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -75,7 +55,6 @@ const Posts = () => {
         },
       });
       const data = res.data;
-
       setPostsData(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -90,6 +69,10 @@ const Posts = () => {
       const { name, value } = e.target;
       setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
     }
+  };
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -114,6 +97,39 @@ const Posts = () => {
     setPostModalOpen(false);
   };
 
+  const editedPost = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append("description", createdPost.description);
+      // Append the post ID to the form data
+      formData.append("postId", selectedPostId);
+
+      await axios.put(
+        `http://localhost:8000/api/edit-post/${selectedPostId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error editing post:", error);
+    }
+    await fetchData();
+    setEditModalOpen(false);
+  };
+  const deletePost = async (id) => {
+    await axios.delete(`http://localhost:8000/api/delete-post/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    await fetchData();
+  };
+
   const formatDate = (date) => {
     const options = {
       month: "long",
@@ -136,6 +152,14 @@ const Posts = () => {
 
   const closePostModal = () => {
     setPostModalOpen(false);
+  };
+  const openEditModal = (post) => {
+    setCreatedPost({ description: post.description });
+    setSelectedPostId(post._id);
+    setEditModalOpen(true);
+  };
+  const closeEditModal = () => {
+    setEditModalOpen(false);
   };
 
   const postDate = (createdAt) => {
@@ -285,11 +309,17 @@ const Posts = () => {
                         noCaret
                         className=" absolute w-max font-semibold text-3xl">
                         <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
-                          <Dropdown.Item className="py-1 hover:text-[#DC143C] cursor-pointer">
+                          <Dropdown.Item
+                            className="py-1 hover:text-[#DC143C] cursor-pointer"
+                            onClick={() => openEditModal(post)}>
                             Edit Post
                           </Dropdown.Item>
                           <hr className="border-[#efecd3]"></hr>
-                          <Dropdown.Item className="py-1 hover:text-[#DC143C] cursor-pointer">
+                          <Dropdown.Item
+                            className="py-1 hover:text-[#DC143C] cursor-pointer"
+                            onClick={() => {
+                              deletePost(post._id);
+                            }}>
                             Delete Post
                           </Dropdown.Item>
                         </div>
@@ -396,6 +426,46 @@ const Posts = () => {
                 <div className="">
                   <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
                     Create Post
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={editModalOpen}
+        onRequestClose={closeEditModal}
+        className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
+        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
+        contentLabel="Create Post Modal">
+        <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
+          <div
+            onClick={closeEditModal}
+            className="flex items-end justify-between px-5">
+            <span className="font-bold text-xl">Edit Description:</span>
+            <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
+              <MdOutlineClose size={32} />
+            </button>
+          </div>
+          <div className="flex flex-col ">
+            <div className="py-4 px-5">
+              <form
+                className="flex flex-col justify-center items-center gap-5"
+                onSubmit={editedPost}>
+                <div className="w-full flex flex-col">
+                  <input
+                    name="description"
+                    type="text"
+                    placeholder="Edit Description"
+                    className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                    onChange={handleEditChange}
+                    value={createdPost.description}
+                  />
+                </div>
+                <div className="">
+                  <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
+                    Update
                   </button>
                 </div>
               </form>
