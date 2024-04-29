@@ -13,6 +13,7 @@ import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 
 const Posts = () => {
@@ -247,7 +248,6 @@ const Posts = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="w-full sm:w-1/2 mx-auto">
         <div className="flex flex-col py-4">
           <div className=" w-full bg-[#efecd3] rounded-xl">
@@ -310,9 +310,14 @@ const Posts = () => {
                         className=" absolute w-max font-semibold text-3xl">
                         <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
                           <Dropdown.Item
-                            className="py-1 hover:text-[#DC143C] cursor-pointer"
+                            className="py-1 hover:text-[#DC143C] cursor-pointer "
                             onClick={() => openEditModal(post)}>
-                            Edit Post
+                            <div className="flex items-center gap-1">
+                              <span>
+                                <MdOutlineEdit size={20} />
+                              </span>
+                              <h2>Edit</h2>
+                            </div>
                           </Dropdown.Item>
                           <hr className="border-[#efecd3]"></hr>
                           <Dropdown.Item
@@ -320,7 +325,12 @@ const Posts = () => {
                             onClick={() => {
                               deletePost(post._id);
                             }}>
-                            Delete Post
+                            <div className="flex items-center gap-1">
+                              <span>
+                                <MdDeleteOutline size={20} />
+                              </span>
+                              <h2>Delete</h2>
+                            </div>
                           </Dropdown.Item>
                         </div>
                       </Dropdown>
