@@ -13,6 +13,7 @@ import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { Dropdown } from "rsuite";
 
 const Posts = () => {
   const postDropdownRef = useRef(null);
@@ -48,7 +49,7 @@ const Posts = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
 
   const toggleDropdown = (postId) => {
     setIsOpen(!isOpen);
@@ -278,14 +279,22 @@ const Posts = () => {
                     </div>
                   </div>
                   <div>
-                    <button onClick={() => toggleDropdown(post._id)}>
-                      ...
-                      {selectedPostId === post._id && (
-                        <div ref={postDropdownRef} className="dropdown-content">
-                          <h1>hello</h1>
+                    <div className="flex px-5 items-center">
+                      <Dropdown
+                        title="..."
+                        noCaret
+                        className=" absolute w-max font-semibold text-3xl">
+                        <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
+                          <Dropdown.Item className="py-1 hover:text-[#DC143C] cursor-pointer">
+                            Edit Post
+                          </Dropdown.Item>
+                          <hr className="border-[#efecd3]"></hr>
+                          <Dropdown.Item className="py-1 hover:text-[#DC143C] cursor-pointer">
+                            Delete Post
+                          </Dropdown.Item>
                         </div>
-                      )}
-                    </button>
+                      </Dropdown>
+                    </div>
                   </div>
                 </div>
                 <hr className="border-white"></hr>
