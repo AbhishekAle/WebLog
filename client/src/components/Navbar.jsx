@@ -2,20 +2,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ArticleIcon from "@mui/icons-material/Article";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import PersonIcon from "@mui/icons-material/Person";
-import { HiCog, HiViewGrid } from "react-icons/hi";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import ExploreIcon from "@mui/icons-material/Explore";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../slices/userSlice";
 import { FiHelpCircle } from "react-icons/fi";
+import { HiCog } from "react-icons/hi";
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const dropdownRef = useRef(null);
   const { userData } = useSelector((state) => state.user);
+  const userId = userData ? userData._id : null; // Check if userData exists
 
   const dispatch = useDispatch();
 
@@ -90,7 +90,7 @@ const Navbar = () => {
                   {showDropdown && (
                     <div className="absolute text-black top-[60px] text-[1.1rem] bg-white border border-gray-300 rounded-md shadow-lg px-8 py-4 ">
                       <Link
-                        to="/account"
+                        to={`/account/${userId}`}
                         onClick={() => handleClick("dashboard")}>
                         <button
                           className={`flex items-center py-2 hover:text-[#DC143C] transition duration-300 ease-in-out gap-3 ${
@@ -105,7 +105,7 @@ const Navbar = () => {
                         </button>
                         <hr />
                       </Link>
-                      <Link to="/settings-privacy">
+                      <Link to={`/settings-privacy/${userId}`}>
                         <button
                           onClick={() => handleClick("settings")}
                           className={`flex items-center py-2 mt-4 hover:text-[#DC143C] transition duration-300 ease-in-out gap-2 ${

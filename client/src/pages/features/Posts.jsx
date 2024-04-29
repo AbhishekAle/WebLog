@@ -18,15 +18,21 @@ const Posts = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [postsData, setPostsData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const [createdPost, setCreatedPost] = useState([
     { description: "", posts: [] },
   ]);
-
+  const [postId, setPostId] = useState("");
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
   const username = userData.username;
   const id = userData._id;
+  const coverPhoto = userData.avatar;
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,6 +54,7 @@ const Posts = () => {
       });
       const data = res.data;
       setPostsData(data);
+      setPostId(data[0]._id);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -77,12 +84,9 @@ const Posts = () => {
         },
       });
 
-      console.log("Post created successfully");
-      // Clear the createdPost state or perform any other necessary actions
       setCreatedPost({ description: "", posts: null });
     } catch (error) {
       console.error("Error creating post:", error);
-      // Handle error appropriately, e.g., show a notification to the user
     }
     await fetchData();
     setPostModalOpen(false);
@@ -234,18 +238,29 @@ const Posts = () => {
               <div
                 key={post._id}
                 className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
-                <div className="flex  items-center gap-2">
+                <div className="flex  items-center gap-2 justify-between">
                   <div className="flex">
                     <img
                       src={`http://localhost:8000/userProfile/${avatar}`}
                       className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
                     />
+
+                    <div className="flex flex-col ">
+                      <h2 className="font-semibold text-xl">{username}</h2>
+                      <span className="flex items-center text-sm">
+                        posted {postDate(post.createdAt)}.
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col ">
-                    <h2 className="font-semibold text-xl">{username}</h2>
-                    <span className="flex items-center text-sm">
-                      posted {postDate(post.createdAt)}.
-                    </span>
+                  <div>
+                    <button onClick={toggleDropdown}>...</button>{" "}
+                    {isOpen && (
+                      <div className="dropdown-content">
+                        <li>Option 1</li>
+                        <li>Option 2</li>
+                        <li>Option 3</li>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <hr className="border-white"></hr>

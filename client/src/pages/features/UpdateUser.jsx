@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 const UpdateUser = () => {
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
-  const id = userData._id;
+  const userId = userData._id;
 
   const [formData, setFormdata] = useState({
     username: "",
@@ -16,11 +16,11 @@ const UpdateUser = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [userId]);
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/users/${id}`, {
+      const res = await axios.get(`http://localhost:8000/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ const UpdateUser = () => {
     e.preventDefault();
     try {
       await axios.patch(
-        `http://localhost:8000/api/update-user/${id}`,
+        `http://localhost:8000/api/update-user/${userId}`,
         { username, password },
         {
           headers: {

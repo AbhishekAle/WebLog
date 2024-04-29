@@ -13,13 +13,19 @@ import Articles from "./pages/Articles";
 import SingleArticle from "./components/SingleArticle";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
 import UpdateUser from "./pages/features/UpdateUser";
+import { useSelector } from "react-redux";
 
 const App = () => {
+  const { userData } = useSelector((state) => state.user);
   return (
     <div className="">
       <BrowserRouter>
         <Navbar />
         <Routes>
+          <Route
+            path="/"
+            element={userData && userData._id ? <HomePage /> : <LandingPage />}
+          />
           <Route path="/" element={<LandingPage />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/about" element={<About />} />
@@ -28,10 +34,13 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/single-article" element={<SingleArticle />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/account" element={<Account />} />
+            <Route path="/account/:userId" element={<Account />} />
             <Route path="/home" element={<HomePage />} />
-            <Route path="/settings-privacy" element={<SettingsPrivacy />} />
-            <Route path="/update-user/:id" element={<UpdateUser />} />
+            <Route
+              path="/settings-privacy/:userId"
+              element={<SettingsPrivacy />}
+            />
+            <Route path="/update-user/" element={<UpdateUser />} />
           </Route>
         </Routes>
       </BrowserRouter>

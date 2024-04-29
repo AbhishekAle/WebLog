@@ -62,6 +62,7 @@ const HomePage = () => {
   const username = userData.username;
   const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());

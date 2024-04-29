@@ -10,6 +10,7 @@ import { setUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
 import Articles from "./Articles";
 import Posts from "./features/Posts";
+import { useParams } from "react-router-dom";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
@@ -24,8 +25,8 @@ const Account = () => {
   const [selectedId, setSelectedId] = useState(null);
   const avatar = userData.avatar;
   const coverPhoto = userData.coverPhoto;
-
-  const id = userData._id;
+  const userId = userData._id;
+  console.log(userId);
   const dispatch = useDispatch();
 
   const handleTabChange = (tabName) => {
@@ -41,11 +42,11 @@ const Account = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [userId]);
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/users/${id}`, {
+      const res = await axios.get(`http://localhost:8000/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -83,7 +84,7 @@ const Account = () => {
     e.preventDefault();
 
     await axios.patch(
-      `http://localhost:8000/api/update-user/${id}`,
+      `http://localhost:8000/api/update-user/${userId}`,
       { email, phoneNumber },
       {
         headers: {
@@ -98,7 +99,7 @@ const Account = () => {
       images.append("coverPhoto", profileCoverPhoto);
 
       await axios.patch(
-        `http://localhost:8000/api/update-user-profile/${id}`,
+        `http://localhost:8000/api/update-user-profile/${userId}`,
         images,
         {
           headers: {
