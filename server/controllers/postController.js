@@ -63,25 +63,24 @@ export const getAllPosts = async (req, res, next) => {
 
 //post edit controller
 export const editPost = async (req, res, next) => {
-  const post = await postModel.findById(req.params.id);
-  if (!post) {
-    return next(errorHandler(401, "post not found"));
-  }
-  if (req.user.id !== post.user) {
-    return next(errorHandler(401, "you can only update your post"));
-  }
+  const postId = req.params.id;
+  const userId = req.user.id;
+  const { description } = req.body;
+
   try {
-    const editPost = await postModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          description: req.body.description || null,
-        },
-      },
-      { new: true }
-    );
-    const { description } = editPost._doc;
-    res.status(200).json(description);
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(errorHandler(404, "Post not found"));
+    }
+    if (userId !== post.user.toString()) {
+      return next(errorHandler(401, "You can only update your own post"));
+    }
+
+    // Update the description only
+    post.description = description;
+    const updatedPost = await post.save();
+
+    res.status(200).json(updatedPost);
   } catch (error) {
     next(error);
   }
