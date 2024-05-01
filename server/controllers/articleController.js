@@ -8,9 +8,11 @@ export const postArticle = async (req, res, next) => {
     return res.status(401).json({ message: "user not authorized" });
   }
   try {
+    const thumbnail = req.files.thumbnail[0];
     const newArticle = new articlesModel({
       description: req.body.description,
       title: req.body.title,
+      thumbnail: thumbnail.filename,
       user: req.params.id,
     });
     await newArticle.save();
