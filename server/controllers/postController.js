@@ -1,5 +1,5 @@
 import postModel from "../models/postModel.js";
-import userModel from "../models/userModel.js";
+// import userModel from "../models/userModel.js";
 import { errorHandler } from "../middleware/error.js";
 
 // Create post controller
