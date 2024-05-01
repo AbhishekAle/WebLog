@@ -22,6 +22,8 @@ const Posts = () => {
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [articleModalOpen, setArticleModalOpen] = useState(false);
   const [articleTitle, setArticleTitle] = useState("");
+  const [thumbnail, setThumbnail] = useState();
+  console.log(thumbnail);
 
   //jodit editor
   const [content, setContent] = useState("");
@@ -99,12 +101,15 @@ const Posts = () => {
   const handleTitle = (e) => {
     setArticleTitle(e.target.value);
   };
+  const handleThumbnail = (e) => {
+    setThumbnail(e.target.files[0]);
+  };
   const handleArticleUpload = async (e) => {
     e.preventDefault();
-    const articleData = {
-      description: content,
-      title: articleTitle,
-    };
+    const articleData = new FormData();
+    articleData.append("description", content);
+    articleData.append("thumbnail", thumbnail);
+    articleData.append("title", articleTitle);
     try {
       await axios.post(
         `http://localhost:8000/api/createarticle/${id}`,
@@ -112,10 +117,13 @@ const Posts = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
+      setContent("");
+      setArticleTitle("");
+      setArticleModalOpen(false);
     } catch (error) {}
   };
   const handleSubmit = async (e) => {
@@ -555,16 +563,39 @@ const Posts = () => {
               <form
                 className="flex flex-col justify-center items-center gap-5"
                 onSubmit={handleArticleUpload}>
-                <div className="w-full flex flex-col">
+                <div className="w-full flex flex-col gap-4">
                   <input
                     name="description"
                     type="text"
-                    placeholder="Title Of Your Content..."
+                    placeholder="Title Of Your Writings..."
                     className="border-2 border-black p-2 rounded-lg outline-none select-none"
                     onChange={handleTitle}
                   />
+                  <label className="gap-1 w-full flex flex-col">
+                    <span className="font-semibold ">Thumbnail</span>
+
+                    <input
+                      type="file"
+                      accept="image"
+                      className="hidden"
+                      onChange={handleThumbnail}
+                      name="thumbnail"
+                    />
+                    <img
+                      src={
+                        thumbnail
+                          ? URL.createObjectURL(thumbnail)
+                          : `${uploadPhotos}`
+                      }
+                      alt=""
+                      title="Change profile picture"
+                      className="h-60 w-full rounded-lg cursor-pointer object-contain border"
+                    />
+                  </label>
                 </div>
+
                 <div className="w-full">
+                  <label className="font-semibold ">Content</label>
                   <JoditEditor
                     ref={editor}
                     value={content}
