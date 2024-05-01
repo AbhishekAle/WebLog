@@ -21,6 +21,7 @@ const Posts = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [articleModalOpen, setArticleModalOpen] = useState(false);
+  const [articleTitle, setArticleTitle] = useState("");
 
   //jodit editor
   const [content, setContent] = useState("");
@@ -95,7 +96,28 @@ const Posts = () => {
     const { name, value } = e.target;
     setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
   };
-
+  const handleTitle = (e) => {
+    setArticleTitle(e.target.value);
+  };
+  const handleArticleUpload = async (e) => {
+    e.preventDefault();
+    const articleData = {
+      description: content,
+      title: articleTitle,
+    };
+    try {
+      await axios.post(
+        `http://localhost:8000/api/createarticle/${id}`,
+        articleData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {}
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -530,13 +552,16 @@ const Posts = () => {
           </div>
           <div className="flex flex-col ">
             <div className="py-4 px-5">
-              <form className="flex flex-col justify-center items-center gap-5">
+              <form
+                className="flex flex-col justify-center items-center gap-5"
+                onSubmit={handleArticleUpload}>
                 <div className="w-full flex flex-col">
                   <input
                     name="description"
                     type="text"
                     placeholder="Title Of Your Content..."
                     className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                    onChange={handleTitle}
                   />
                 </div>
                 <div className="w-full">
