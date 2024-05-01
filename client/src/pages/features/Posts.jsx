@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaUserFriends, FaNewspaper } from "react-icons/fa";
 import { TbPhoto } from "react-icons/tb";
 import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
@@ -11,16 +11,37 @@ import uploadPhotos from "../../assets/uploadPhotos.png";
 import { SlLike } from "react-icons/sl";
 import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
+import JoditEditor from "jodit-react";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [articleModalOpen, setArticleModalOpen] = useState(false);
+
+  //jodit editor
+  const [content, setContent] = useState("");
+  const editor = useRef(null);
+  const defaultPlaceholder = "Start typing...";
+
+  const config = useMemo(
+    () => ({
+      placeholder: defaultPlaceholder,
+      readonly: false,
+      enableDragAndDropFileToEditor: true,
+      uploader: {
+        insertImageAsBase64URI: true,
+      },
+      image: {
+        move: true, // Enable image movement
+      },
+    }),
+    []
+  );
+
   const [postsData, setPostsData] = useState([]);
   const [createdPost, setCreatedPost] = useState({
     description: "",
@@ -28,7 +49,6 @@ const Posts = () => {
   });
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  console.log(selectedPostId);
 
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
@@ -496,7 +516,7 @@ const Posts = () => {
       <Modal
         isOpen={articleModalOpen}
         onRequestClose={closeArticleModal}
-        className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
+        className="modal lg:w-4/5 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
         contentLabel="Create Post Modal">
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
@@ -510,36 +530,30 @@ const Posts = () => {
           </div>
           <div className="flex flex-col ">
             <div className="py-4 px-5">
-              <form
-                className="flex flex-col justify-center items-center gap-5"
-                onSubmit={handleSubmit}>
+              <form className="flex flex-col justify-center items-center gap-5">
                 <div className="w-full flex flex-col">
                   <input
                     name="description"
                     type="text"
                     placeholder="Title Of Your Content..."
                     className="border-2 border-black p-2 rounded-lg outline-none select-none"
-                    onChange={handleChange}
                   />
                 </div>
-                <label className="gap-1 w-full flex flex-col">
-                  <span className="font-medium">Media:</span>
-
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleChange}
+                <div className="w-full">
+                  <JoditEditor
+                    ref={editor}
+                    value={content}
+                    config={config}
+                    tabIndex={1} // tabIndex of textarea
+                    onBlur={(newContent) => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
+                    onChange={(newContent) => {
+                      setContent(newContent);
+                    }}
                   />
-                  <img
-                    src={uploadPhotos}
-                    alt=""
-                    title="Upload Photo/Videos"
-                    className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
-                  />
-                </label>
+                </div>
                 <div className="">
                   <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
-                    Create Post
+                    Upload Articles
                   </button>
                 </div>
               </form>
