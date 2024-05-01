@@ -17,10 +17,10 @@ import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 
 const Posts = () => {
-  const postDropdownRef = useRef(null);
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
+  const [articleModalOpen, setArticleModalOpen] = useState(false);
   const [postsData, setPostsData] = useState([]);
   const [createdPost, setCreatedPost] = useState({
     description: "",
@@ -162,6 +162,12 @@ const Posts = () => {
   const closeEditModal = () => {
     setEditModalOpen(false);
   };
+  const openArticleModal = () => {
+    setArticleModalOpen(true);
+  };
+  const closeArticleModal = () => {
+    setArticleModalOpen(false);
+  };
 
   const postDate = (createdAt) => {
     const currentTime = new Date();
@@ -274,7 +280,9 @@ const Posts = () => {
                   <IoMdPhotos />
                   <span>Photo/Video</span>
                 </li>
-                <li className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium">
+                <li
+                  className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium"
+                  onClick={openArticleModal}>
                   <FaNewspaper />
                   <span>Articles</span>
                 </li>
@@ -443,6 +451,7 @@ const Posts = () => {
           </div>
         </div>
       </Modal>
+      {/* Edit Post Modal */}
       <Modal
         isOpen={editModalOpen}
         onRequestClose={closeEditModal}
@@ -476,6 +485,61 @@ const Posts = () => {
                 <div className="">
                   <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
                     Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      {/* create article modal */}
+      <Modal
+        isOpen={articleModalOpen}
+        onRequestClose={closeArticleModal}
+        className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
+        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
+        contentLabel="Create Post Modal">
+        <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
+          <div
+            onClick={closeArticleModal}
+            className="flex items-end justify-between px-5">
+            <span className="font-bold text-xl">Share your writings...</span>
+            <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
+              <MdOutlineClose size={32} />
+            </button>
+          </div>
+          <div className="flex flex-col ">
+            <div className="py-4 px-5">
+              <form
+                className="flex flex-col justify-center items-center gap-5"
+                onSubmit={handleSubmit}>
+                <div className="w-full flex flex-col">
+                  <input
+                    name="description"
+                    type="text"
+                    placeholder="Title Of Your Content..."
+                    className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                    onChange={handleChange}
+                  />
+                </div>
+                <label className="gap-1 w-full flex flex-col">
+                  <span className="font-medium">Media:</span>
+
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleChange}
+                  />
+                  <img
+                    src={uploadPhotos}
+                    alt=""
+                    title="Upload Photo/Videos"
+                    className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
+                  />
+                </label>
+                <div className="">
+                  <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
+                    Create Post
                   </button>
                 </div>
               </form>
