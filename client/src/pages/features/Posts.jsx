@@ -22,7 +22,7 @@ const Posts = () => {
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [articleModalOpen, setArticleModalOpen] = useState(false);
   const [articleTitle, setArticleTitle] = useState("");
-  const [thumbnail, setThumbnail] = useState();
+  const [thumbnail, setThumbnail] = useState("");
   console.log(thumbnail);
 
   //jodit editor
@@ -123,6 +123,7 @@ const Posts = () => {
       );
       setContent("");
       setArticleTitle("");
+      setThumbnail("");
       setArticleModalOpen(false);
     } catch (error) {}
   };
@@ -546,7 +547,7 @@ const Posts = () => {
       <Modal
         isOpen={articleModalOpen}
         onRequestClose={closeArticleModal}
-        className="modal lg:w-4/5 bg-white p-4 rounded-xl shadow"
+        className="modal lg:w-3/5 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
         contentLabel="Create Post Modal">
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
