@@ -19,3 +19,28 @@ export const postArticle = async (req, res, next) => {
     next(error);
   }
 };
+//get articles by user
+export const getArticlesByUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return res.status(401).json({ message: "user not authorized" });
+  }
+  try {
+    const articles = await articlesModel.find({ user: req.params.id });
+    res.status(200).json(articles);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get all articles
+export const getAllArticles = async (req, res, next) => {
+  try {
+    const articles = await articlesModel.find();
+    res.status(200).json(articles);
+    if (!articles) {
+      return next(errorHandler(404, "articles not found"));
+    }
+  } catch (error) {
+    next(error);
+  }
+};

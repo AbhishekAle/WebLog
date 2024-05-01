@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import connectDb from "./config/db.js";
 import userRoute from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
+import articleRoute from "./routes/articleRoute.js";
 
 const app = express();
 app.use(cors());
@@ -22,3 +23,4 @@ app.listen(port, () => console.log(`server started at ${port}`));
 //routes
 app.use("/api", userRoute);
 app.use("/api", postRoute);
+app.use("/api", articleRoute);
