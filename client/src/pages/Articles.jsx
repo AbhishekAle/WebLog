@@ -1,95 +1,84 @@
-import React from "react";
-import sagarmatha from "../assets/sagarmatha.jpg";
-import pasupatinath from "../assets/pasupatinath.jpg";
-import suklaphata from "../assets/suklaphata.jpeg";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { SlCalender } from "react-icons/sl";
 
 const Articles = () => {
+  const [articles, setArticles] = useState([]);
   const navigate = useNavigate();
 
-  const handleReadMore = () => {
-    navigate("/single-article");
+  const handleReadMore = (articleId) => {
+    navigate(`/single-article/${articleId}`);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/articles`);
+      const data = res.data.map((article) => ({
+        ...article,
+        showFullContent: false,
+      }));
+      setArticles(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   return (
-    <div className="px-40 py-4 bg-[#efecd3] min-h-screen">
-      <div className="w-full">
-        <div className="flex gap-10 py-2">
-          <div className="flex-col w-[60vh]">
-            <img
-              src={sagarmatha}
-              alt="Article Image"
-              className="h-[22vh]  w-[60vh]"
-            />
-            <h2 className="font-semibold text-xl">
-              "Sagarmāthā National Park is a national park in the Himalayas of
-              eastern Nepal."
-            </h2>
+    <div className="px-4 md:px-10 lg:px-64 bg-[#efecd3] min-h-screen">
+      <div className="mx-auto flex flex-col-reverse">
+        {articles.map((article, index) => (
+          <div key={index}>
+            <div className="flex md:flex-row py-4 md:py-4">
+              <div className="md:w-1/2 flex flex-col gap-2">
+                <img
+                  src={`http://localhost:8000/thumbnail/${article.thumbnail}`}
+                  alt="Article Image"
+                  className="w-3/4 h-[16rem] rounded-xl"
+                />
+              </div>
+              <div className="md:w-1/2">
+                <h2 className="font-medium text-xl mb-2">
+                  "{article.title}"{" "}
+                  <p className="mb-2 flex items-center gap-2 text-sm text-red-500">
+                    <SlCalender className="" />
+                    {formatDate(article.createdAt)}
+                  </p>
+                </h2>
+
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: article.showFullContent
+                      ? article.description
+                      : `${article.description.slice(0, 500)}...`,
+                  }}
+                  style={{ textAlign: "justify" }}
+                />
+                {/* Display created date */}
+                {article.description.length > 500 && (
+                  <button
+                    className="text-blue-500 font-medium mt-2 cursor-pointer"
+                    onClick={() => handleReadMore(article._id)}>
+                    Read more...
+                  </button>
+                )}
+              </div>
+            </div>
+            <hr className="border-black my-4" />
           </div>
-          {/* <div className="w-2/3" style={{ textAlign: "justify" }}>
-            <label className=" text-lg">
-              {text.length > 600 ? text.slice(0, 600) + " " : text}
-            </label>
-            {text.length > 600 && (
-              <button
-                className="text-blue-500 font-semibold mt-2 cursor-pointer"
-                onClick={handleReadMore}>
-                Read More...
-              </button>
-            )}
-          </div> */}
-        </div>
-        <hr className="border-black py-4" />
-        <div className="flex gap-10 pb-5">
-          <div className="flex-col w-[60vh]">
-            <img
-              src={pasupatinath}
-              alt="Article Image"
-              className="h-[22vh]  w-[60vh]"
-            />
-            <h2 className="font-semibold text-xl">
-              "The exact date of the temple's construction is uncertain"
-            </h2>
-          </div>
-          {/* <div className="w-2/3" style={{ textAlign: "justify" }}>
-            <label className=" text-lg">
-              {text2.length > 600 ? text2.slice(0, 600) + " " : text2}
-            </label>
-            {text2.length > 600 && (
-              <button
-                className="text-blue-500 font-semibold mt-2 cursor-pointer"
-                onClick={handleReadMore}>
-                Read More...
-              </button>
-            )}
-          </div> */}
-        </div>
-        <hr className="border-black py-4" />
-        <div className="flex gap-10">
-          <div className="flex-col w-[60vh]">
-            <img
-              src={suklaphata}
-              alt="Article Image"
-              className="h-[22vh]  w-[60vh]"
-            />
-            <h2 className="font-semibold text-xl">
-              "Sagarmāthā National Park is a national park in the Himalayas of
-              eastern Nepal. "
-            </h2>
-          </div>
-          {/* <div className="w-2/3" style={{ textAlign: "justify" }}>
-            <label className=" text-lg">
-              {text.length > 600 ? text.slice(0, 600) + " " : text}
-            </label>
-            {text.length > 600 && (
-              <button
-                className="text-blue-500 font-semibold mt-2 cursor-pointer"
-                onClick={handleReadMore}>
-                Read More...
-              </button>
-            )}
-          </div> */}
-        </div>
+        ))}
       </div>
     </div>
   );

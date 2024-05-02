@@ -51,7 +51,7 @@ const UserArticles = () => {
       <div className="mx-auto flex flex-col-reverse">
         {articles.map((article, index) => (
           <div key={index}>
-            <div className="flex md:flex-row  py-4= md:py-4">
+            <div className="flex md:flex-row  py-4 md:py-4">
               <div className="md:w-1/2 flex flex-col gap-2">
                 <img
                   src={`http://localhost:8000/thumbnail/${article.thumbnail}`}

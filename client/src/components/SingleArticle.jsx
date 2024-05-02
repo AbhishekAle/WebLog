@@ -33,13 +33,15 @@ const SingleArticle = () => {
       <div className="mx-auto">
         {article && (
           <div>
-            <h2 className="font-medium text-xl mb-2 flex items-center justify-center border-b border-black">
+            <h2 className="font-medium text-2xl mb-2 flex items-center justify-center border-b border-black">
               "{article.title}"
             </h2>
             <div
               dangerouslySetInnerHTML={{
                 __html: article.description,
-              }}></div>
+              }}
+              style={{ textAlign: "justify" }}
+              className="text-lg"></div>
           </div>
         )}
       </div>
