@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { SlCalender } from "react-icons/sl";
 
 const UserArticles = () => {
   const { userData } = useSelector((state) => state.user);
@@ -37,13 +38,20 @@ const UserArticles = () => {
       console.log(error);
     }
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   return (
-    <div className="px-4 md:px-10 lg:px-56 py-4 bg-[#efecd3] min-h-screen">
-      <div className="mx-auto flex  flex-col-reverse">
+    <div className="px-4 md:px-10 lg:px-56 bg-[#efecd3] min-h-screen">
+      <div className="mx-auto flex flex-col-reverse">
         {articles.map((article, index) => (
           <div key={index}>
-            <div className="flex md:flex-row  py-4 md:py-8">
+            <div className="flex md:flex-row  py-4= md:py-4">
               <div className="md:w-1/2 flex flex-col gap-2">
                 <img
                   src={`http://localhost:8000/thumbnail/${article.thumbnail}`}
@@ -52,7 +60,14 @@ const UserArticles = () => {
                 />
               </div>
               <div className="md:w-1/2">
-                <h2 className="font-medium text-xl mb-2">"{article.title}"</h2>
+                <h2 className="font-medium text-xl mb-2">
+                  "{article.title}"{" "}
+                  <p className="mb-2 flex items-center gap-2 text-sm text-red-500">
+                    <SlCalender className="" />
+                    {formatDate(article.createdAt)}
+                  </p>
+                </h2>
+
                 <div
                   dangerouslySetInnerHTML={{
                     __html: article.showFullContent
@@ -61,6 +76,7 @@ const UserArticles = () => {
                   }}
                   style={{ textAlign: "justify" }}
                 />
+                {/* Display created date */}
                 {article.description.length > 500 && (
                   <button
                     className="text-blue-500 font-medium mt-2 cursor-pointer"
