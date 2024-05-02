@@ -14,6 +14,7 @@ import SingleArticle from "./components/SingleArticle";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
 import UpdateUser from "./pages/features/UpdateUser";
 import { useSelector } from "react-redux";
+import UserArticles from "./components/UserArticles";
 
 const App = () => {
   const { userData } = useSelector((state) => state.user);
@@ -32,7 +33,10 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/single-article" element={<SingleArticle />} />
+          <Route
+            path="/single-article/:articleId"
+            element={<SingleArticle />}
+          />
           <Route element={<PrivateRoute />}>
             <Route path="/account/:userId" element={<Account />} />
             <Route path="/home" element={<HomePage />} />

@@ -10,8 +10,8 @@ const UserArticles = () => {
   const id = userData._id;
   const navigate = useNavigate();
 
-  const handleReadMore = () => {
-    navigate("/single-article");
+  const handleReadMore = (articleId) => {
+    navigate(`/single-article/${articleId}`);
   };
 
   useEffect(() => {
@@ -38,16 +38,6 @@ const UserArticles = () => {
     }
   };
 
-  const toggleContent = (index) => {
-    setArticles((prevState) =>
-      prevState.map((article, i) =>
-        i === index
-          ? { ...article, showFullContent: !article.showFullContent }
-          : article
-      )
-    );
-  };
-
   return (
     <div className="px-4 md:px-10 lg:px-56 py-4 bg-[#efecd3] min-h-screen">
       <div className="mx-auto flex  flex-col-reverse">
@@ -69,12 +59,13 @@ const UserArticles = () => {
                       ? article.description
                       : `${article.description.slice(0, 500)}...`,
                   }}
+                  style={{ textAlign: "justify" }}
                 />
                 {article.description.length > 500 && (
                   <button
                     className="text-blue-500 font-medium mt-2 cursor-pointer"
-                    onClick={() => toggleContent(index)}>
-                    {article.showFullContent ? "Show less" : "Read more..."}
+                    onClick={() => handleReadMore(article._id)}>
+                    Read more...
                   </button>
                 )}
               </div>

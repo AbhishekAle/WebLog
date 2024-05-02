@@ -11,10 +11,11 @@ import uploadPhotos from "../../assets/uploadPhotos.png";
 import { SlLike } from "react-icons/sl";
 import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 import JoditEditor from "jodit-react";
+import UserArticles from "../../components/UserArticles";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
@@ -58,6 +59,7 @@ const Posts = () => {
   const avatar = userData.avatar;
   const username = userData.username;
   const id = userData._id;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -110,7 +112,7 @@ const Posts = () => {
     articleData.append("thumbnail", thumbnail);
     articleData.append("title", articleTitle);
     try {
-      await axios.post(
+      const res = await axios.post(
         `http://localhost:8000/api/createarticle/${id}`,
         articleData,
         {

@@ -2,6 +2,7 @@ import express from "express";
 import { verifyToken } from "../middleware/verifyUser.js";
 import {
   getAllArticles,
+  getArticlesById,
   getArticlesByUser,
   postArticle,
 } from "../controllers/articleController.js";
@@ -33,5 +34,6 @@ router.post(
 );
 router.get("/getarticlesbyuser/:id", verifyToken, getArticlesByUser);
 router.get("/articles", getAllArticles);
+router.get("/articles/:id", getArticlesById);
 
 export default router;
