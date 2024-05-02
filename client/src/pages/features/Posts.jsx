@@ -23,7 +23,6 @@ const Posts = () => {
   const [articleModalOpen, setArticleModalOpen] = useState(false);
   const [articleTitle, setArticleTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
-  console.log(thumbnail);
 
   //jodit editor
   const [content, setContent] = useState("");
@@ -218,6 +217,7 @@ const Posts = () => {
   };
   const closeArticleModal = () => {
     setArticleModalOpen(false);
+    setThumbnail("");
   };
 
   const postDate = (createdAt) => {

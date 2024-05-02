@@ -8,8 +8,8 @@ import Modal from "react-modal";
 import { MdOutlineClose } from "react-icons/md";
 import { setUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
-import Articles from "./Articles";
 import Posts from "./features/Posts";
+import UserArticles from "../components/UserArticles";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
@@ -180,7 +180,7 @@ const Account = () => {
             )}
             {activeTab === "articles" && (
               <div className="">
-                <Articles />
+                <UserArticles />
               </div>
             )}
             {activeTab === "videos" && <div>Videos</div>}
