@@ -13,7 +13,8 @@ const postSchema = mongoose.Schema(
       },
     ],
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId, // Reference to User model
+      ref: "User", // Name of the User model
       required: true,
     },
   },

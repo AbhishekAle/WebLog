@@ -334,12 +334,14 @@ const HomePage = () => {
                 <div className="flex  items-center gap-2">
                   <div className="flex">
                     <img
-                      src={`http://localhost:8000/userProfile/${avatar}`}
+                      src={`http://localhost:8000/userProfile/${post.user.avatar}`}
                       className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
                     />
                   </div>
                   <div className="flex flex-col ">
-                    <h2 className="font-semibold text-xl">{username}</h2>
+                    <h2 className="font-semibold text-xl">
+                      {post.user.username}
+                    </h2>
                     <span className="flex items-center text-sm">
                       posted {postDate(post.createdAt)}.
                     </span>

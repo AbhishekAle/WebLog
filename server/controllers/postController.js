@@ -51,11 +51,14 @@ export const getPostsByUser = async (req, res, next) => {
 //get All posts controller
 export const getAllPosts = async (req, res, next) => {
   try {
-    const posts = await postModel.find();
-    res.status(200).json(posts);
-    if (!posts) {
+    const posts = await postModel.find().populate({
+      path: "user",
+      select: "username avatar",
+    });
+    if (!posts || posts.length === 0) {
       return res.status(404).json({ message: "No posts found" });
     }
+    res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

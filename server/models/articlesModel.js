@@ -15,7 +15,8 @@ const articlesSchema = mongoose.Schema(
       required: true,
     },
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId, // Reference to User model
+      ref: "User", // Name of the User model
       required: true,
     },
   },

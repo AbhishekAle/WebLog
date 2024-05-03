@@ -37,7 +37,10 @@ export const getArticlesByUser = async (req, res, next) => {
 //get all articles
 export const getAllArticles = async (req, res, next) => {
   try {
-    const articles = await articlesModel.find();
+    const articles = await articlesModel.find().populate({
+      path: "user",
+      select: "username avatar",
+    });
     res.status(200).json(articles);
     if (!articles) {
       return next(errorHandler(404, "articles not found"));
