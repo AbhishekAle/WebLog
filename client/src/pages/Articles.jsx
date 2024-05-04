@@ -11,9 +11,6 @@ const Articles = () => {
   const handleReadMore = (articleId) => {
     navigate(`/single-article/${articleId}`);
   };
-  const handleNavigateToUserAccount = (userId) => {
-    navigate(`/account/${userId}`);
-  };
 
   useEffect(() => {
     fetchData();
@@ -58,18 +55,14 @@ const Articles = () => {
                   <div className="flex items-center">
                     <div className="flex items-center gap-1">
                       {/* Wrap avatar and username in Link */}
-                      <Link to={`/account/${article.user._id}`}>
-                        <img
-                          src={`http://localhost:8000/userProfile/${article.user.avatar}`}
-                          className="lg:w-5 w-10 lg:h-5 h-10 rounded-full object-cover mb-2"
-                          onClick={() =>
-                            handleNavigateToUserAccount(article.user._id)
-                          }
-                        />
-                        <h2 className="text-base pb-2">
-                          {article.user.username}
-                        </h2>
-                      </Link>
+
+                      <img
+                        src={`http://localhost:8000/userProfile/${article.user.avatar}`}
+                        className="lg:w-5 w-10 lg:h-5 h-10 rounded-full object-cover mb-2"
+                      />
+                      <h2 className="text-base pb-2">
+                        {article.user.username}
+                      </h2>
                     </div>
                     <p className="mb-2 pl-3 flex items-center gap-1 text-sm text-red-500 ">
                       <SlCalender className="" />
@@ -86,7 +79,7 @@ const Articles = () => {
                   }}
                   style={{ textAlign: "justify" }}
                 />
-                {/* Display created date */}
+
                 {article.description.length > 500 && (
                   <button
                     className="text-blue-500 font-medium mt-2 cursor-pointer"
