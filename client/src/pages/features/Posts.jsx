@@ -15,7 +15,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 import JoditEditor from "jodit-react";
-import UserArticles from "../../components/UserArticles";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");

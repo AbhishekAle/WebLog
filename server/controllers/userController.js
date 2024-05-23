@@ -1,4 +1,5 @@
 import userModel from "../models/userModel.js";
+import mongoose from "mongoose";
 import { errorHandler } from "../middleware/error.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -136,6 +137,10 @@ export const getAllUser = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
     const user = await userModel.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });

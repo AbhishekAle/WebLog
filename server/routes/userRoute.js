@@ -43,6 +43,6 @@ router.patch(
   updateUserProfile
 );
 router.get("/users", verifyToken, getAllUser);
-router.get("/users/:id", verifyToken, getUserById);
+router.get("/users/:id", getUserById);
 
 export default router;

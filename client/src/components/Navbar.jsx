@@ -9,14 +9,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../slices/userSlice";
 import { FiHelpCircle } from "react-icons/fi";
 import { HiCog } from "react-icons/hi";
+import { persistor } from "../store";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const dropdownRef = useRef(null);
   const { userData } = useSelector((state) => state.user);
-  const userId = userData ? userData._id : null; // Check if userData exists
-
+  const userId = userData ? userData._id : null;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await axios.post("http://localhost:8000/api/logout");
     dispatch(setUser());
+    navigate("/login");
     setShowDropdown(false);
   };
 

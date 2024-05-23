@@ -7,7 +7,7 @@ import { FaNewspaper } from "react-icons/fa6";
 import { FaBookmark } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import { IoMdPhotos } from "react-icons/io";
 import { MdCalendarMonth } from "react-icons/md";
@@ -62,6 +62,7 @@ const HomePage = () => {
   const username = userData.username;
   const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
+  const userId = userData._id;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -158,7 +159,9 @@ const HomePage = () => {
         <div className="sticky top-20 h-[60vh] bg-[#efecd3] rounded-2xl p-8 flex flex-col justify-between">
           <div className="flex flex-col">
             <ul className="flex flex-col gap-5 px-2 ">
-              <Link to="/account" onClick={() => handleClick("dashboard")}>
+              <Link
+                to={`/account/${userId}`}
+                onClick={() => handleClick("dashboard")}>
                 <button
                   className={`flex items-center  text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out gap-3 ${
                     activeButton === "dashboard" ? "text-[#DC143C]" : ""
@@ -279,52 +282,6 @@ const HomePage = () => {
       </div>
 
       <div className="w-1/2 ">
-        <div className="flex justify-center gap-2">
-          {stories.map((story, index) => (
-            <span key={index} className="w-[13rem] h-80 rounded-2xl">
-              <img
-                src={story.imageDesktop}
-                alt={`Story ${index}`}
-                className="w-full h-full object-cover rounded-2xl"
-              />
-            </span>
-          ))}
-        </div>
-        <div className="flex  justify-center py-4">
-          <div className="w-full bg-[#efecd3] rounded-xl">
-            <form className="flex items-center justify-center gap-4 p-4">
-              <span className="p-1 rounded-full text-[#DC143C] bg-white">
-                <img
-                  src={`http://localhost:8000/userProfile/${avatar}`}
-                  alt="a"
-                  className="h-10 w-10 rounded-full bg-cover"
-                />
-              </span>
-              <input
-                type="text"
-                placeholder="Share Your Thought..."
-                className="border w-4/5 p-3 rounded-2xl"
-              />
-            </form>
-            <hr className="border border-white" />
-            <div className="flex justify-center p-4">
-              <ul className="flex gap-20">
-                <li className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium">
-                  <span className="font-semibold text-2xl text-[#DC143C]">
-                    <IoMdPhotos />
-                  </span>
-                  Photo/Video
-                </li>
-                <li className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium">
-                  <span className="font-semibold text-2xl text-[#DC143C]">
-                    <FaNewspaper />
-                  </span>
-                  Articles
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
         <div className="py-4">
           <div className="flex flex-col-reverse gap-5 ">
             {postsData.map((post) => (

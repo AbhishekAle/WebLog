@@ -11,6 +11,14 @@ const Articles = () => {
   const handleReadMore = (articleId) => {
     navigate(`/single-article/${articleId}`);
   };
+  const handleProfileClick = (articleIndex) => {
+    if (articles.length > articleIndex && articleIndex >= 0) {
+      const userId = articles[articleIndex].user._id;
+      navigate(`/account/${userId}`);
+    } else {
+      console.error("Invalid article index");
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -21,7 +29,6 @@ const Articles = () => {
       const res = await axios.get(`http://localhost:8000/api/articles`);
       const data = res.data.map((article) => ({
         ...article,
-        showFullContent: false,
       }));
       setArticles(data);
     } catch (error) {
@@ -53,9 +60,10 @@ const Articles = () => {
                 <div className="font-medium text-xl mb-2">
                   "{article.title}"{" "}
                   <div className="flex items-center">
-                    <div className="flex items-center gap-1">
+                    <div
+                      className="flex items-center gap-1 cursor-pointer"
+                      onClick={() => handleProfileClick(index)}>
                       {/* Wrap avatar and username in Link */}
-
                       <img
                         src={`http://localhost:8000/userProfile/${article.user.avatar}`}
                         className="lg:w-5 w-10 lg:h-5 h-10 rounded-full object-cover mb-2"

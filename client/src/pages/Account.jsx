@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import pasupatinath from "../assets/pasupatinath.jpg";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { MdAdd } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import Modal from "react-modal";
 import { MdOutlineClose } from "react-icons/md";
@@ -10,11 +8,13 @@ import { setUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
 import Posts from "./features/Posts";
 import UserArticles from "../components/UserArticles";
+import { useParams } from "react-router-dom";
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
+  const [userDataById, setUserDataById] = useState({});
   const [profilePic, setProfilePic] = useState();
   const [profileCoverPhoto, setProfileCoverPhoto] = useState();
   const [activeTab, setActiveTab] = useState("posts");
@@ -24,6 +24,8 @@ const Account = () => {
   const [selectedId, setSelectedId] = useState(null);
   const avatar = userData.avatar;
   const coverPhoto = userData.coverPhoto;
+  const profileId = useParams();
+  const id = profileId.userId;
   const userId = userData._id;
   const dispatch = useDispatch();
 
@@ -37,10 +39,19 @@ const Account = () => {
         ? "border-b-2 px-1 border-[#DC143C] text-[#DC143C]"
         : "hover:text-[#DC143C]"
     }`;
-
+  useEffect(() => {
+    fetchUserById();
+  }, [id]);
   useEffect(() => {
     fetchData();
   }, [userId]);
+  const fetchUserById = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/users/${id}`);
+      const data = await res.data;
+      setUserDataById(data);
+    } catch (error) {}
+  };
 
   const fetchData = async () => {
     try {
@@ -106,87 +117,148 @@ const Account = () => {
           },
         }
       );
-      await fetchData();
+      window.location.reload();
     }
     setFormModalOpen(false);
   };
 
   return (
     <div className="w-full px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 py-1 bg-slate-50">
-      <div className="flex flex-col">
-        <div>
-          <img
-            src={`http://localhost:8000/userProfile/${coverPhoto}`}
-            alt="cover photo"
-            title="Cover Photo"
-            className="w-full h-80 sm:h-96 md:h-[50vh] border-slate-200 border-2 rounded-xl object-fit"
-          />
-        </div>
+      {userDataById ? (
+        <>
+          <div className="flex flex-col">
+            <div>
+              <img
+                src={`http://localhost:8000/userProfile/${userDataById.coverPhoto}`}
+                alt="cover photo"
+                title="Cover Photo"
+                className="w-full h-80 sm:h-96 md:h-[50vh] border-slate-200 border-2 rounded-xl object-fit"
+              />
+            </div>
 
-        <div className=" flex flex-col lg:flex-row justify-between items-center px-4 sm:px-12 md:px-20 lg:px-32 xl:px-40">
-          <div className="flex items-center gap-4 sm:gap-10">
-            <img
-              src={`http://localhost:8000/userProfile/${avatar}`}
-              className="relative top-[-2rem] lg:w-52 w-20 lg:h-52 h-20 rounded-full border-4 border-white object-cover"
-            />
-            <div className="flex flex-col">
-              <h2 className="relative top-[-2rem] font-semibold text-lg sm:text-2xl">
-                {formData.username}
-              </h2>
+            <div className=" flex flex-col lg:flex-row justify-between items-center px-4 sm:px-12 md:px-20 lg:px-32 xl:px-40">
+              <div className="flex items-center gap-4 sm:gap-10">
+                <img
+                  src={`http://localhost:8000/userProfile/${userDataById.avatar}`}
+                  className="relative top-[-2rem] lg:w-52 w-20 lg:h-52 h-20 rounded-full border-4 border-white object-cover"
+                />
+                <div className="flex flex-col">
+                  <h2 className="relative top-[-2rem] font-semibold text-lg sm:text-2xl">
+                    {userDataById.username}
+                  </h2>
+                </div>
+              </div>
+              {id === userId && (
+                <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
+                  <button
+                    className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
+                    onClick={openFormModal}>
+                    <span>
+                      <FiEdit />
+                    </span>
+                    Edit Profile
+                  </button>
+                </div>
+              )}
+            </div>
+            <hr className="border-black"></hr>
+            <div className="w-full">
+              <div className="flex  gap-10 py-3 items-center justify-center bg-white">
+                <button
+                  onClick={() => handleTabChange("posts")}
+                  className={`${tabItemClass("posts")} font-medium text-lg`}>
+                  Posts
+                </button>
+                <button
+                  onClick={() => handleTabChange("articles")}
+                  className={`${tabItemClass("articles")} font-medium text-lg`}>
+                  Articles
+                </button>
+                <button
+                  onClick={() => handleTabChange("videos")}
+                  className={`${tabItemClass("videos")} font-medium text-lg`}>
+                  Videos
+                </button>
+              </div>
+              <hr className="border-black pb-3"></hr>
+              <div className="flex-grow">
+                {activeTab === "posts" && (
+                  <div>
+                    <Posts />
+                  </div>
+                )}
+                {activeTab === "articles" && (
+                  <div className="">
+                    <UserArticles />
+                  </div>
+                )}
+                {activeTab === "videos" && <div>Videos</div>}
+              </div>
             </div>
           </div>
-          <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
-            <button className="bg-[#DC143C] p-2 rounded-lg text-white font-medium text-md sm:text-lg hover:bg-red-400 flex items-center justify-center">
-              <span>
-                <MdAdd />
-              </span>
-              Add Story
-            </button>
-            <button
-              className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
-              onClick={openFormModal}>
-              <span>
-                <FiEdit />
-              </span>
-              Edit
-            </button>
-          </div>
-        </div>
-        <hr className="border-black"></hr>
-        <div className="w-full">
-          <div className="flex  gap-10 py-3 items-center justify-center bg-white">
-            <button
-              onClick={() => handleTabChange("posts")}
-              className={`${tabItemClass("posts")} font-medium text-lg`}>
-              Posts
-            </button>
-            <button
-              onClick={() => handleTabChange("articles")}
-              className={`${tabItemClass("articles")} font-medium text-lg`}>
-              Articles
-            </button>
-            <button
-              onClick={() => handleTabChange("videos")}
-              className={`${tabItemClass("videos")} font-medium text-lg`}>
-              Videos
-            </button>
-          </div>
-          <hr className="border-black pb-3"></hr>
-          <div className="flex-grow">
-            {activeTab === "posts" && (
-              <div>
-                <Posts />
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col">
+            <div>
+              <img
+                src={`http://localhost:8000/userProfile/${coverPhoto}`}
+                alt="cover photo"
+                title="Cover Photo"
+                className="w-full h-80 sm:h-96 md:h-[50vh] border-slate-200 border-2 rounded-xl object-fit"
+              />
+            </div>
+
+            <div className=" flex flex-col lg:flex-row justify-between items-center px-4 sm:px-12 md:px-20 lg:px-32 xl:px-40">
+              <div className="flex items-center gap-4 sm:gap-10">
+                <img
+                  src={`http://localhost:8000/userProfile/${avatar}`}
+                  className="relative top-[-2rem] lg:w-52 w-20 lg:h-52 h-20 rounded-full border-4 border-white object-cover"
+                />
+                <div className="flex flex-col">
+                  <h2 className="relative top-[-2rem] font-semibold text-lg sm:text-2xl">
+                    {formData.username}
+                  </h2>
+                </div>
               </div>
-            )}
-            {activeTab === "articles" && (
-              <div className="">
-                <UserArticles />
+            </div>
+            <hr className="border-black"></hr>
+            <div className="w-full">
+              <div className="flex  gap-10 py-3 items-center justify-center bg-white">
+                <button
+                  onClick={() => handleTabChange("posts")}
+                  className={`${tabItemClass("posts")} font-medium text-lg`}>
+                  Posts
+                </button>
+                <button
+                  onClick={() => handleTabChange("articles")}
+                  className={`${tabItemClass("articles")} font-medium text-lg`}>
+                  Articles
+                </button>
+                <button
+                  onClick={() => handleTabChange("videos")}
+                  className={`${tabItemClass("videos")} font-medium text-lg`}>
+                  Videos
+                </button>
               </div>
-            )}
-            {activeTab === "videos" && <div>Videos</div>}
+              <hr className="border-black pb-3"></hr>
+              <div className="flex-grow">
+                {activeTab === "posts" && (
+                  <div>
+                    <Posts />
+                  </div>
+                )}
+                {activeTab === "articles" && (
+                  <div className="">
+                    <UserArticles />
+                  </div>
+                )}
+                {activeTab === "videos" && <div>Videos</div>}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
       <Modal
         isOpen={formModalOpen}
         onRequestClose={closeFormModal}
