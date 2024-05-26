@@ -36,16 +36,14 @@ export const createPost = async (req, res) => {
 
 //get posts by user controller
 export const getPostsByUser = async (req, res, next) => {
-  if (req.user.id === req.params.id) {
+  
     try {
       const postsByUser = await postModel.find({ user: req.params.id });
       res.status(200).json(postsByUser);
     } catch (error) {
       next(error);
     }
-  } else {
-    return next(errorHandler(401, "error fetching data"));
-  }
+  
 };
 
 //get All posts controller

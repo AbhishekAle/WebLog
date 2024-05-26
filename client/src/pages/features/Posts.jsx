@@ -11,10 +11,10 @@ import uploadPhotos from "../../assets/uploadPhotos.png";
 import { SlLike } from "react-icons/sl";
 import { FaRegComment } from "react-icons/fa";
 import { TbShare3 } from "react-icons/tb";
-import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 import JoditEditor from "jodit-react";
+import { useParams } from "react-router-dom";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
@@ -51,6 +51,9 @@ const Posts = () => {
   });
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [userDataById, setUserDataById] = useState([]);
+  const [profileData,setProfileData]=useState([])
+  
 
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
@@ -58,8 +61,9 @@ const Posts = () => {
   const avatar = userData.avatar;
   const username = userData.username;
   const id = userData._id;
-  const navigate = useNavigate();
-
+  const profileId = useParams();
+  const userId =  profileId.userId
+ 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -69,7 +73,28 @@ const Posts = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id, token]);
+    fetchUser();
+    fetchUserData()
+  }, []);
+
+ const fetchUser = async()=>{
+  try {
+    const res = await axios.get(`http://localhost:8000/api/users/${userId}`);
+    const data = await res.data;
+    setUserDataById(data);
+  } catch (error) {
+    console.log(error)
+  }
+ }
+ const fetchUserData = async()=>{
+  try {
+    const res = await axios.get(`http://localhost:8000/api/getposts/${userId}`)
+    const data = res.data;
+    setProfileData(data)
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+ }
 
   const fetchData = async () => {
     try {
@@ -111,7 +136,7 @@ const Posts = () => {
     articleData.append("thumbnail", thumbnail);
     articleData.append("title", articleTitle);
     try {
-      const res = await axios.post(
+      await axios.post(
         `http://localhost:8000/api/createarticle/${id}`,
         articleData,
         {
@@ -125,7 +150,9 @@ const Posts = () => {
       setArticleTitle("");
       setThumbnail("");
       setArticleModalOpen(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -307,7 +334,7 @@ const Posts = () => {
       </div>
 
       <div className="w-full sm:w-1/2 mx-auto">
-        <div className="flex flex-col py-4">
+        {id === userId ? (<><div className="flex flex-col py-4">
           <div className=" w-full bg-[#efecd3] rounded-xl">
             <form className="flex items-center justify-center gap-4 p-4">
               <span className=" p-3 rounded-full text-[#DC143C]">
@@ -341,9 +368,10 @@ const Posts = () => {
               </ul>
             </div>
           </div>
-        </div>
+        </div></>):""}
+        
         <div className="py-4">
-          <div className="flex flex-col-reverse gap-5 ">
+          {id === userId ? (<><div className="flex flex-col-reverse gap-5 ">
             {postsData.map((post) => (
               <div
                 key={post._id}
@@ -407,7 +435,7 @@ const Posts = () => {
                       key={index}
                       src={`http://localhost:8000/userPosts/${postImage}`}
                       alt={`Post ${index + 1}`}
-                      className="w-full h-[26rem] rounded-xl object-cover"
+                      className="w-full h-[26rem] rounded-xl object-fit"
                     />
                   ))}
                 </div>
@@ -430,7 +458,83 @@ const Posts = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div></>):(<>
+            <div className="flex flex-col-reverse gap-5 ">
+            {profileData.map((post) => (
+              <div
+                key={post._id}
+                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
+                <div className="flex  items-center gap-2 justify-between">
+                  <div className="flex">
+                    <img
+                      src={`http://localhost:8000/userProfile/${userDataById.avatar}`}
+                      className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                    />
+
+                    <div className="flex flex-col ">
+                      <h2 className="font-semibold text-xl">{userDataById.username}</h2>
+                      <span className="flex items-center text-sm">
+                        posted {postDate(post.createdAt)}.
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex px-5 items-center">
+                      <Dropdown
+                        title="..."
+                        noCaret
+                        className=" absolute w-max font-semibold text-3xl">
+                        <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
+                          <Dropdown.Item
+                            className="py-1 hover:text-[#DC143C] cursor-pointer "
+                            onClick={() => openEditModal(post)}>
+                            <div className="flex items-center gap-1">
+                              <span>
+                                <MdOutlineEdit size={20} />
+                              </span>
+                              <h2>Report</h2>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+                      </Dropdown>
+                    </div>
+                  </div>
+                </div>
+                <hr className="border-white"></hr>
+                <div className="px-5">
+                  <h3 className="font-medium">{post.description}</h3>
+                </div>
+                <div className="flex gap-5">
+                  {post.posts.map((postImage, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8000/userPosts/${postImage}`}
+                      alt={`Post ${index + 1}`}
+                      className="w-full h-[26rem] rounded-xl object-fit"
+                    />
+                  ))}
+                </div>
+                <hr className="border-white"></hr>
+                <div className="flex justify-evenly">
+                  <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
+                    <span className="text-black font-medium">100K</span>
+                    <SlLike size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1K</span>
+                    <FaRegComment size={28} />
+                  </button>
+                  <span className="border-r-2 border-white"></span>
+                  <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
+                    <span className="text-black font-medium">1M</span>
+                    <TbShare3 size={28} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div></>) }
+          
           <div className="flex justify-center mt-10 text-xl font-semibold">
             <p>
               <span>&larr;</span>---------- End Of Posts ----------
@@ -483,6 +587,7 @@ const Posts = () => {
 
                   <input
                     type="file"
+                    accept="image/*, video/*"
                     className="hidden"
                     onChange={handleChange}
                   />

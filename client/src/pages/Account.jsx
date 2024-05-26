@@ -41,16 +41,18 @@ const Account = () => {
     }`;
   useEffect(() => {
     fetchUserById();
-  }, [id]);
+  }, []);
   useEffect(() => {
     fetchData();
-  }, [userId]);
+  }, []);
   const fetchUserById = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/api/users/${id}`);
       const data = await res.data;
       setUserDataById(data);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const fetchData = async () => {

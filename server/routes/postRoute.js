@@ -32,7 +32,7 @@ router.post(
   upload.array("posts", 5), // Upload images with a maximum count of 5
   createPost
 );
-router.get("/getposts/:id", verifyToken, getPostsByUser);
+router.get("/getposts/:id", getPostsByUser);
 router.get("/get-all-posts", verifyToken, getAllPosts);
 router.put("/edit-post/:id", verifyToken, editPost);
 router.delete("/delete-post/:id", verifyToken, deletePost);
