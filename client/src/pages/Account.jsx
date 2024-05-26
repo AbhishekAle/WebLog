@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { FiEdit } from "react-icons/fi";
@@ -63,7 +63,7 @@ const Account = () => {
           "Content-Type": "application/json",
         },
       });
-      const data = res.data;
+      const data = await res.data;
       setFormData(data);
       dispatch(setUser(data));
     } catch (error) {
@@ -126,7 +126,7 @@ const Account = () => {
 
   return (
     <div className="w-full px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 py-1 bg-slate-50">
-      {userDataById ? (
+      {userDataById && id !== userId? (
         <>
           <div className="flex flex-col">
             <div>
@@ -150,18 +150,7 @@ const Account = () => {
                   </h2>
                 </div>
               </div>
-              {id === userId && (
-                <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
-                  <button
-                    className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
-                    onClick={openFormModal}>
-                    <span>
-                      <FiEdit />
-                    </span>
-                    Edit Profile
-                  </button>
-                </div>
-              )}
+             
             </div>
             <hr className="border-black"></hr>
             <div className="w-full">
@@ -223,6 +212,16 @@ const Account = () => {
                   </h2>
                 </div>
               </div>
+              <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
+                  <button
+                    className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
+                    onClick={openFormModal}>
+                    <span>
+                      <FiEdit />
+                    </span>
+                    Edit Profile
+                  </button>
+                </div>
             </div>
             <hr className="border-black"></hr>
             <div className="w-full">

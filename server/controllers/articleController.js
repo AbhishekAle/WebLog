@@ -23,9 +23,6 @@ export const postArticle = async (req, res, next) => {
 };
 //get articles by user
 export const getArticlesByUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id) {
-    return res.status(401).json({ message: "user not authorized" });
-  }
   try {
     const articles = await articlesModel.find({ user: req.params.id });
     res.status(200).json(articles);

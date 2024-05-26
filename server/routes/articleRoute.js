@@ -32,7 +32,7 @@ router.post(
   verifyToken,
   postArticle
 );
-router.get("/getarticlesbyuser/:id", verifyToken, getArticlesByUser);
+router.get("/getarticlesbyuser/:id", getArticlesByUser);
 router.get("/articles", getAllArticles);
 router.get("/articles/:id", getArticlesById);
 

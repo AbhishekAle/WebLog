@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FaUserFriends, FaNewspaper } from "react-icons/fa";
 import { TbPhoto } from "react-icons/tb";
 import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
