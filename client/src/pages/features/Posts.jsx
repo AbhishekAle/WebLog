@@ -5,6 +5,7 @@ import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
 import { IoMdPhotos } from "react-icons/io";
 import { useSelector } from "react-redux";
+import { useFirebase } from "../../context/firebase";
 import Modal from "react-modal";
 import axios from "axios";
 import uploadPhotos from "../../assets/uploadPhotos.png";
@@ -18,11 +19,15 @@ import { useParams } from "react-router-dom";
 
 const Posts = () => {
   const [activeButton, setActiveButton] = useState("");
+  const [activeTab, setActiveTab] = useState("post");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postModalOpen, setPostModalOpen] = useState(false);
   const [articleModalOpen, setArticleModalOpen] = useState(false);
   const [articleTitle, setArticleTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
+  const [title, setTitle] = useState("");
+  const [videoFile, setVideoFile] = useState(null);
+  const firebase = useFirebase();
 
   //jodit editor
   const [content, setContent] = useState("");
@@ -52,8 +57,7 @@ const Posts = () => {
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [userDataById, setUserDataById] = useState([]);
-  const [profileData,setProfileData]=useState([])
-  
+  const [profileData, setProfileData] = useState([]);
 
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
@@ -62,8 +66,8 @@ const Posts = () => {
   const username = userData.username;
   const id = userData._id;
   const profileId = useParams();
-  const userId =  profileId.userId
- 
+  const userId = profileId.userId;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -74,27 +78,29 @@ const Posts = () => {
   useEffect(() => {
     fetchData();
     fetchUser();
-    fetchUserData()
+    fetchUserData();
   }, []);
 
- const fetchUser = async()=>{
-  try {
-    const res = await axios.get(`http://localhost:8000/api/users/${userId}`);
-    const data = await res.data;
-    setUserDataById(data);
-  } catch (error) {
-    console.log(error)
-  }
- }
- const fetchUserData = async()=>{
-  try {
-    const res = await axios.get(`http://localhost:8000/api/getposts/${userId}`)
-    const data = res.data;
-    setProfileData(data)
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
- }
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/users/${userId}`);
+      const data = await res.data;
+      setUserDataById(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchUserData = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/getposts/${userId}`
+      );
+      const data = res.data;
+      setProfileData(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -151,7 +157,7 @@ const Posts = () => {
       setThumbnail("");
       setArticleModalOpen(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
   const handleSubmit = async (e) => {
@@ -248,6 +254,24 @@ const Posts = () => {
     setThumbnail("");
   };
 
+  //firebase
+  const handleFileChange = (e) => {
+    setVideoFile(e.target.files[0]);
+  };
+
+  const handleVideoSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !videoFile) {
+      console.log("Title and video file are required.");
+      return;
+    }
+    try {
+      await firebase.handleVideoUpload(title, videoFile, userData._id);
+    } catch (error) {
+      console.error("Error uploading video:", error);
+    }
+  };
+
   const postDate = (createdAt) => {
     const currentTime = new Date();
     const postTime = new Date(createdAt);
@@ -308,7 +332,8 @@ const Posts = () => {
                 className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                   activeButton === "connections" ? "text-[#DC143C]" : ""
                 }`}
-                onClick={() => handleClick("connections")}>
+                onClick={() => handleClick("connections")}
+              >
                 <FaUserFriends className="text-[#DC143C]" />
                 <span>Connections</span>
               </li>
@@ -316,7 +341,8 @@ const Posts = () => {
                 className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                   activeButton === "photos" ? "text-[#DC143C]" : ""
                 }`}
-                onClick={() => handleClick("photos")}>
+                onClick={() => handleClick("photos")}
+              >
                 <TbPhoto className="text-[#DC143C]" />
                 <span>Photos</span>
               </li>
@@ -324,7 +350,8 @@ const Posts = () => {
                 className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                   activeButton === "messages" ? "text-[#DC143C]" : ""
                 }`}
-                onClick={() => handleClick("messages")}>
+                onClick={() => handleClick("messages")}
+              >
                 <BiSolidMessageDetail className="text-[#DC143C]" />
                 <span>Messages</span>
               </li>
@@ -334,207 +361,231 @@ const Posts = () => {
       </div>
 
       <div className="w-full sm:w-1/2 mx-auto">
-        {id === userId ? (<><div className="flex flex-col py-4">
-          <div className=" w-full bg-[#efecd3] rounded-xl">
-            <form className="flex items-center justify-center gap-4 p-4">
-              <span className=" p-3 rounded-full text-[#DC143C]">
-                <img
-                  src={`http://localhost:8000/userProfile/${avatar}`}
-                  className="lg:w-14 w-10 lg:h-14 h-10 rounded-full border-4 border-white object-cover"
-                />
-              </span>
-              <input
-                type="text"
-                placeholder="Share Your Thought..."
-                className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
-                onClick={openPostModal}
-              />
-            </form>
-            <hr className="border border-white" />
-            <div className="flex justify-center p-4">
-              <ul className="flex gap-20">
-                <li
-                  className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium"
-                  onClick={openPostModal}>
-                  <IoMdPhotos />
-                  <span>Photo/Video</span>
-                </li>
-                <li
-                  className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium"
-                  onClick={openArticleModal}>
-                  <FaNewspaper />
-                  <span>Articles</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div></>):""}
-        
-        <div className="py-4">
-          {id === userId ? (<><div className="flex flex-col-reverse gap-5 ">
-            {postsData.map((post) => (
-              <div
-                key={post._id}
-                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
-                <div className="flex  items-center gap-2 justify-between">
-                  <div className="flex">
+        {id === userId ? (
+          <>
+            <div className="flex flex-col py-4">
+              <div className=" w-full bg-[#efecd3] rounded-xl">
+                <form className="flex items-center justify-center gap-4 p-4">
+                  <span className=" p-3 rounded-full text-[#DC143C]">
                     <img
                       src={`http://localhost:8000/userProfile/${avatar}`}
-                      className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                      className="lg:w-14 w-10 lg:h-14 h-10 rounded-full border-4 border-white object-cover"
                     />
-
-                    <div className="flex flex-col ">
-                      <h2 className="font-semibold text-xl">{username}</h2>
-                      <span className="flex items-center text-sm">
-                        posted {postDate(post.createdAt)}.
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex px-5 items-center">
-                      <Dropdown
-                        title="..."
-                        noCaret
-                        className=" absolute w-max font-semibold text-3xl">
-                        <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
-                          <Dropdown.Item
-                            className="py-1 hover:text-[#DC143C] cursor-pointer "
-                            onClick={() => openEditModal(post)}>
-                            <div className="flex items-center gap-1">
-                              <span>
-                                <MdOutlineEdit size={20} />
-                              </span>
-                              <h2>Edit</h2>
-                            </div>
-                          </Dropdown.Item>
-                          <hr className="border-[#efecd3]"></hr>
-                          <Dropdown.Item
-                            className="py-1 hover:text-[#DC143C] cursor-pointer"
-                            onClick={() => {
-                              deletePost(post._id);
-                            }}>
-                            <div className="flex items-center gap-1">
-                              <span>
-                                <MdDeleteOutline size={20} />
-                              </span>
-                              <h2>Delete</h2>
-                            </div>
-                          </Dropdown.Item>
-                        </div>
-                      </Dropdown>
-                    </div>
-                  </div>
-                </div>
-                <hr className="border-white"></hr>
-                <div className="px-5">
-                  <h3 className="font-medium">{post.description}</h3>
-                </div>
-                <div className="flex gap-5">
-                  {post.posts.map((postImage, index) => (
-                    <img
-                      key={index}
-                      src={`http://localhost:8000/userPosts/${postImage}`}
-                      alt={`Post ${index + 1}`}
-                      className="w-full h-[26rem] rounded-xl object-fit"
-                    />
-                  ))}
-                </div>
-                <hr className="border-white"></hr>
-                <div className="flex justify-evenly">
-                  <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
-                    <span className="text-black font-medium">100K</span>
-                    <SlLike size={28} />
-                  </button>
-                  <span className="border-r-2 border-white"></span>
-                  <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
-                    <span className="text-black font-medium">1K</span>
-                    <FaRegComment size={28} />
-                  </button>
-                  <span className="border-r-2 border-white"></span>
-                  <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
-                    <span className="text-black font-medium">1M</span>
-                    <TbShare3 size={28} />
-                  </button>
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Share Your Thought..."
+                    className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
+                    onClick={openPostModal}
+                  />
+                </form>
+                <hr className="border border-white" />
+                <div className="flex justify-center p-4">
+                  <ul className="flex gap-20">
+                    <li
+                      className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium"
+                      onClick={openPostModal}
+                    >
+                      <IoMdPhotos />
+                      <span>Photo/Video</span>
+                    </li>
+                    <li
+                      className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium"
+                      onClick={openArticleModal}
+                    >
+                      <FaNewspaper />
+                      <span>Articles</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-            ))}
-          </div></>):(<>
-            <div className="flex flex-col-reverse gap-5 ">
-            {profileData.map((post) => (
-              <div
-                key={post._id}
-                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
-                <div className="flex  items-center gap-2 justify-between">
-                  <div className="flex">
-                    <img
-                      src={`http://localhost:8000/userProfile/${userDataById.avatar}`}
-                      className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
-                    />
+            </div>
+          </>
+        ) : (
+          ""
+        )}
 
-                    <div className="flex flex-col ">
-                      <h2 className="font-semibold text-xl">{userDataById.username}</h2>
-                      <span className="flex items-center text-sm">
-                        posted {postDate(post.createdAt)}.
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex px-5 items-center">
-                      <Dropdown
-                        title="..."
-                        noCaret
-                        className=" absolute w-max font-semibold text-3xl">
-                        <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
-                          <Dropdown.Item
-                            className="py-1 hover:text-[#DC143C] cursor-pointer "
-                            onClick={() => openEditModal(post)}>
-                            <div className="flex items-center gap-1">
-                              <span>
-                                <MdOutlineEdit size={20} />
-                              </span>
-                              <h2>Report</h2>
-                            </div>
-                          </Dropdown.Item>
+        <div className="py-4">
+          {id === userId ? (
+            <>
+              <div className="flex flex-col-reverse gap-5 ">
+                {postsData.map((post) => (
+                  <div
+                    key={post._id}
+                    className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]"
+                  >
+                    <div className="flex  items-center gap-2 justify-between">
+                      <div className="flex">
+                        <img
+                          src={`http://localhost:8000/userProfile/${avatar}`}
+                          className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                        />
+
+                        <div className="flex flex-col ">
+                          <h2 className="font-semibold text-xl">{username}</h2>
+                          <span className="flex items-center text-sm">
+                            posted {postDate(post.createdAt)}.
+                          </span>
                         </div>
-                      </Dropdown>
+                      </div>
+                      <div>
+                        <div className="flex px-5 items-center">
+                          <Dropdown
+                            title="..."
+                            noCaret
+                            className=" absolute w-max font-semibold text-3xl"
+                          >
+                            <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
+                              <Dropdown.Item
+                                className="py-1 hover:text-[#DC143C] cursor-pointer "
+                                onClick={() => openEditModal(post)}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <span>
+                                    <MdOutlineEdit size={20} />
+                                  </span>
+                                  <h2>Edit</h2>
+                                </div>
+                              </Dropdown.Item>
+                              <hr className="border-[#efecd3]"></hr>
+                              <Dropdown.Item
+                                className="py-1 hover:text-[#DC143C] cursor-pointer"
+                                onClick={() => {
+                                  deletePost(post._id);
+                                }}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <span>
+                                    <MdDeleteOutline size={20} />
+                                  </span>
+                                  <h2>Delete</h2>
+                                </div>
+                              </Dropdown.Item>
+                            </div>
+                          </Dropdown>
+                        </div>
+                      </div>
+                    </div>
+                    <hr className="border-white"></hr>
+                    <div className="px-5">
+                      <h3 className="font-medium">{post.description}</h3>
+                    </div>
+                    <div className="flex gap-5">
+                      {post.posts.map((postImage, index) => (
+                        <img
+                          key={index}
+                          src={`http://localhost:8000/userPosts/${postImage}`}
+                          alt={`Post ${index + 1}`}
+                          className="w-full h-[26rem] rounded-xl object-fit"
+                        />
+                      ))}
+                    </div>
+                    <hr className="border-white"></hr>
+                    <div className="flex justify-evenly">
+                      <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
+                        <span className="text-black font-medium">100K</span>
+                        <SlLike size={28} />
+                      </button>
+                      <span className="border-r-2 border-white"></span>
+                      <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
+                        <span className="text-black font-medium">1K</span>
+                        <FaRegComment size={28} />
+                      </button>
+                      <span className="border-r-2 border-white"></span>
+                      <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
+                        <span className="text-black font-medium">1M</span>
+                        <TbShare3 size={28} />
+                      </button>
                     </div>
                   </div>
-                </div>
-                <hr className="border-white"></hr>
-                <div className="px-5">
-                  <h3 className="font-medium">{post.description}</h3>
-                </div>
-                <div className="flex gap-5">
-                  {post.posts.map((postImage, index) => (
-                    <img
-                      key={index}
-                      src={`http://localhost:8000/userPosts/${postImage}`}
-                      alt={`Post ${index + 1}`}
-                      className="w-full h-[26rem] rounded-xl object-fit"
-                    />
-                  ))}
-                </div>
-                <hr className="border-white"></hr>
-                <div className="flex justify-evenly">
-                  <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
-                    <span className="text-black font-medium">100K</span>
-                    <SlLike size={28} />
-                  </button>
-                  <span className="border-r-2 border-white"></span>
-                  <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
-                    <span className="text-black font-medium">1K</span>
-                    <FaRegComment size={28} />
-                  </button>
-                  <span className="border-r-2 border-white"></span>
-                  <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
-                    <span className="text-black font-medium">1M</span>
-                    <TbShare3 size={28} />
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div></>) }
-          
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col-reverse gap-5 ">
+                {profileData.map((post) => (
+                  <div
+                    key={post._id}
+                    className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]"
+                  >
+                    <div className="flex  items-center gap-2 justify-between">
+                      <div className="flex">
+                        <img
+                          src={`http://localhost:8000/userProfile/${userDataById.avatar}`}
+                          className="lg:w-12 w-10 lg:h-12 h-10 rounded-full border-4 border-white object-cover"
+                        />
+
+                        <div className="flex flex-col ">
+                          <h2 className="font-semibold text-xl">
+                            {userDataById.username}
+                          </h2>
+                          <span className="flex items-center text-sm">
+                            posted {postDate(post.createdAt)}.
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex px-5 items-center">
+                          <Dropdown
+                            title="..."
+                            noCaret
+                            className=" absolute w-max font-semibold text-3xl"
+                          >
+                            <div className="relative right-16 font-medium text-base py-2 px-4 bg-white rounded-xl border-2">
+                              <Dropdown.Item
+                                className="py-1 hover:text-[#DC143C] cursor-pointer "
+                                onClick={() => openEditModal(post)}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <span>
+                                    <MdOutlineEdit size={20} />
+                                  </span>
+                                  <h2>Report</h2>
+                                </div>
+                              </Dropdown.Item>
+                            </div>
+                          </Dropdown>
+                        </div>
+                      </div>
+                    </div>
+                    <hr className="border-white"></hr>
+                    <div className="px-5">
+                      <h3 className="font-medium">{post.description}</h3>
+                    </div>
+                    <div className="flex gap-5">
+                      {post.posts.map((postImage, index) => (
+                        <img
+                          key={index}
+                          src={`http://localhost:8000/userPosts/${postImage}`}
+                          alt={`Post ${index + 1}`}
+                          className="w-full h-[26rem] rounded-xl object-fit"
+                        />
+                      ))}
+                    </div>
+                    <hr className="border-white"></hr>
+                    <div className="flex justify-evenly">
+                      <button className="   py-2 px-6 rounded-lg text-[#DC143C] font-bold hover:bg-[#e6e1b9] flex items-center jus gap-2 ">
+                        <span className="text-black font-medium">100K</span>
+                        <SlLike size={28} />
+                      </button>
+                      <span className="border-r-2 border-white"></span>
+                      <button className=" text-[#DC143C] font-bold  hover:bg-[#e6e1b9]  py-2 px-6 rounded-lg flex items-center gap-2 ">
+                        <span className="text-black font-medium">1K</span>
+                        <FaRegComment size={28} />
+                      </button>
+                      <span className="border-r-2 border-white"></span>
+                      <button className=" text-[#DC143C] font-bold hover:bg-[#e6e1b9] py-2 px-10 rounded-lg flex items-center gap-2 ">
+                        <span className="text-black font-medium">1M</span>
+                        <TbShare3 size={28} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           <div className="flex justify-center mt-10 text-xl font-semibold">
             <p>
               <span>&larr;</span>---------- End Of Posts ----------
@@ -558,11 +609,13 @@ const Posts = () => {
         onRequestClose={closePostModal}
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
-        contentLabel="Create Post Modal">
+        contentLabel="Create Post Modal"
+      >
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div
             onClick={closePostModal}
-            className="flex items-end justify-between px-5">
+            className="flex items-end justify-between px-5"
+          >
             <span className="font-bold text-xl">Create Post</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
@@ -570,40 +623,120 @@ const Posts = () => {
           </div>
           <div className="flex flex-col ">
             <div className="py-4 px-5">
-              <form
-                className="flex flex-col justify-center items-center gap-5"
-                onSubmit={handleSubmit}>
-                <div className="w-full flex flex-col">
-                  <input
-                    name="description"
-                    type="text"
-                    placeholder="Share Your Thoughts..."
-                    className="border-2 border-black p-2 rounded-lg outline-none select-none"
-                    onChange={handleChange}
-                  />
-                </div>
-                <label className="gap-1 w-full flex flex-col">
-                  <span className="font-medium">Media:</span>
+              <div className="flex justify-center py-2 w-full gap-5">
+                <button
+                  className={`p-2 w-full rounded-lg ${
+                    activeTab === "post"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                  onClick={() => setActiveTab("post")}
+                >
+                  Create Post
+                </button>
+                <button
+                  className={`p-2 w-full rounded-lg ${
+                    activeTab === "video"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                  onClick={() => setActiveTab("video")}
+                >
+                  Upload Video
+                </button>
+              </div>
 
-                  <input
-                    type="file"
-                    accept="image/*, video/*"
-                    className="hidden"
-                    onChange={handleChange}
-                  />
-                  <img
-                    src={uploadPhotos}
-                    alt=""
-                    title="Upload Photo/Videos"
-                    className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
-                  />
-                </label>
-                <div className="">
-                  <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
-                    Create Post
-                  </button>
-                </div>
-              </form>
+              {activeTab === "post" && (
+                <>
+                  <form
+                    className="flex flex-col justify-center items-center gap-5"
+                    onSubmit={handleSubmit}
+                  >
+                    <div className="w-full flex flex-col">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Caption
+                      </label>
+                      <input
+                        name="description"
+                        type="text"
+                        placeholder="Share Your Thoughts..."
+                        className="border-2 border-black p-2 rounded-lg outline-none select-none"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <label className="gap-1 w-full flex flex-col">
+                      <span className="block text-gray-700 text-sm font-bold mb-2">
+                        Media:
+                      </span>
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleChange}
+                      />
+                      <img
+                        src={uploadPhotos}
+                        alt=""
+                        title="Upload Photo"
+                        className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
+                      />
+                    </label>
+                    <div className="">
+                      <button className="bg-red-500 text-white flex justify-center items-center  rounded-xl cursor-pointer py-2 px-5 mx-auto font-semibold text-xl hover:bg-red-400">
+                        Create Post
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+              {activeTab === "video" && (
+                <>
+                  {" "}
+                  <form
+                    className="flex flex-col justify-center items-center gap-5"
+                    onSubmit={handleVideoSubmit}
+                  >
+                    <div className="mb-6 w-full">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        className="border-2 border-black p-2 rounded-lg outline-none select-none w-full"
+                        placeholder="Enter video title"
+                        onChange={(e) => setTitle(e.target.value)}
+                        value={title}
+                      />
+                    </div>
+
+                    <label className="gap-1 w-full flex flex-col">
+                      Select Video<span></span>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                      <img
+                        src={uploadPhotos}
+                        alt=""
+                        title="Upload Photo/Videos"
+                        className="h-60 rounded-lg cursor-pointer border-2 border-black object-contain"
+                      />
+                    </label>
+
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      >
+                        Upload
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -614,11 +747,13 @@ const Posts = () => {
         onRequestClose={closeEditModal}
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
-        contentLabel="Create Post Modal">
+        contentLabel="Create Post Modal"
+      >
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div
             onClick={closeEditModal}
-            className="flex items-end justify-between px-5">
+            className="flex items-end justify-between px-5"
+          >
             <span className="font-bold text-xl">Edit Description:</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
@@ -628,7 +763,8 @@ const Posts = () => {
             <div className="py-4 px-5">
               <form
                 className="flex flex-col justify-center items-center gap-5"
-                onSubmit={editedPost}>
+                onSubmit={editedPost}
+              >
                 <div className="w-full flex flex-col">
                   <input
                     name="description"
@@ -655,11 +791,13 @@ const Posts = () => {
         onRequestClose={closeArticleModal}
         className="modal lg:w-3/5 bg-white p-4 rounded-xl shadow"
         overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
-        contentLabel="Create Post Modal">
+        contentLabel="Create Post Modal"
+      >
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div
             onClick={closeArticleModal}
-            className="flex items-end justify-between px-5">
+            className="flex items-end justify-between px-5"
+          >
             <span className="font-bold text-xl">Share your writings...</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
@@ -669,7 +807,8 @@ const Posts = () => {
             <div className="py-4 px-5">
               <form
                 className="flex flex-col justify-center items-center gap-5"
-                onSubmit={handleArticleUpload}>
+                onSubmit={handleArticleUpload}
+              >
                 <div className="w-full flex flex-col gap-4">
                   <input
                     name="description"

@@ -15,6 +15,7 @@ import SettingsPrivacy from "./pages/SettingsPrivacy";
 import UpdateUser from "./pages/features/UpdateUser";
 import { useSelector } from "react-redux";
 import UserArticles from "./components/UserArticles";
+import Videos from "./pages/features/Videos";
 
 const App = () => {
   const { userData } = useSelector((state) => state.user);
@@ -45,6 +46,7 @@ const App = () => {
               element={<SettingsPrivacy />}
             />
             <Route path="/update-user/" element={<UpdateUser />} />
+            <Route path="/videos" element={<Videos />} />
           </Route>
         </Routes>
       </BrowserRouter>

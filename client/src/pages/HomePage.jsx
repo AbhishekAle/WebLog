@@ -161,11 +161,13 @@ const HomePage = () => {
             <ul className="flex flex-col gap-5 px-2 ">
               <Link
                 to={`/account/${userId}`}
-                onClick={() => handleClick("dashboard")}>
+                onClick={() => handleClick("dashboard")}
+              >
                 <button
                   className={`flex items-center  text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out gap-3 ${
                     activeButton === "dashboard" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <img
                       src={`http://localhost:8000/userProfile/${avatar}`}
@@ -183,11 +185,13 @@ const HomePage = () => {
 
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("connections")}>
+                onClick={() => handleClick("connections")}
+              >
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "connections" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <FaUserFriends />
                   </span>
@@ -199,11 +203,13 @@ const HomePage = () => {
               </li>
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("feeds")}>
+                onClick={() => handleClick("feeds")}
+              >
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "feeds" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <FaNewspaper />
                   </span>
@@ -215,11 +221,13 @@ const HomePage = () => {
               </li>
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("saved")}>
+                onClick={() => handleClick("saved")}
+              >
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "saved" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <FaBookmark />
                   </span>
@@ -231,11 +239,13 @@ const HomePage = () => {
               </li>
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("messages")}>
+                onClick={() => handleClick("messages")}
+              >
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "messages" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <MdOndemandVideo />
                   </span>
@@ -247,11 +257,13 @@ const HomePage = () => {
               </li>
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("videos")}>
+                onClick={() => handleClick("videos")}
+              >
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "videos" ? "text-[#DC143C]" : ""
-                  }`}>
+                  }`}
+                >
                   <span className="flex items-center text-[#DC143C]">
                     <BiSolidMessageDetail />
                   </span>
@@ -287,7 +299,8 @@ const HomePage = () => {
             {postsData.map((post) => (
               <div
                 key={post._id}
-                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]">
+                className="flex flex-col gap-4 p-4 rounded-xl bg-[#efecd3]"
+              >
                 <div className="flex  items-center gap-2">
                   <div className="flex">
                     <img
