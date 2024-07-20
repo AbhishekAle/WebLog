@@ -1,67 +1,72 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFirebase } from "../../context/firebase";
-import { useSelector } from "react-redux";
 
 const Videos = () => {
-  const [title, setTitle] = useState("");
-  const [videoFile, setVideoFile] = useState(null);
-  const { userData } = useSelector((state) => state.user);
   const firebase = useFirebase();
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleFileChange = (e) => {
-    setVideoFile(e.target.files[0]);
-  };
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const videosData = await firebase.listAllVideos();
+        console.log("Fetched videos data:", videosData);
+        setVideos(videosData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !videoFile) {
-      console.log("Title and video file are required.");
-      return;
-    }
-    try {
-      await firebase.handleVideoUpload(title, videoFile, userData._id);
-    } catch (error) {
-      console.error("Error uploading video:", error);
-    }
-  };
+    fetchVideos();
+  }, [firebase]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
     <div className="flex flex-col items-center p-4 bg-gray-100 min-h-screen">
-      <form
-        className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md"
-        onSubmit={handleSubmit}
-      >
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Title
-          </label>
-          <input
-            type="text"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Enter video title"
-            onChange={(e) => setTitle(e.target.value)}
-            value={title}
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Select Video
-          </label>
-          <input
-            type="file"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      <h1 className="text-2xl font-bold mb-4">Videos</h1>
+      {videos.length === 0 ? (
+        <p>No videos available</p>
+      ) : (
+        videos.map((video) => (
+          <div
+            key={video.id}
+            className="bg-white p-4 m-2 shadow-md w-full max-w-4xl"
           >
-            Upload
-          </button>
-        </div>
-      </form>
+            <h2 className="text-lg font-bold mb-2 text-center">
+              {video.title}
+            </h2>
+            <div className="flex justify-center mb-2">
+              <video
+                controls
+                className="w-[45rem] h-[25rem] object-contain rounded-lg"
+              >
+                <source src={video.videoURL} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div className="flex items-center justify-center mb-2">
+              <img
+                src={video.avataURL}
+                alt="default avatar"
+                className="w-10 h-10 rounded-full mr-2"
+              />
+
+              <p className="text-sm text-center">{video.username}</p>
+            </div>
+            <p className="text-sm text-center">User ID: {video.userId}</p>
+          </div>
+        ))
+      )}
     </div>
   );
 };

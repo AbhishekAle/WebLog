@@ -1,60 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { LiaCopyrightSolid } from "react-icons/lia";
-import { MdSpaceDashboard } from "react-icons/md";
 import { FaRegComment, FaUserFriends } from "react-icons/fa";
 import { FaNewspaper } from "react-icons/fa6";
 import { FaBookmark } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
-import { Link, useParams } from "react-router-dom";
-import PersonIcon from "@mui/icons-material/Person";
-import { IoMdPhotos } from "react-icons/io";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MdCalendarMonth } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { SlLike } from "react-icons/sl";
 import { TbShare3 } from "react-icons/tb";
 import axios from "axios";
 
-const data = [
-  {
-    title: "Banner 1",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 2",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 3",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 4",
-    imageMobile:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-  {
-    title: "Banner 5",
-    imageMobile: "https://api.slingacademy.com/v1/sample-data/photos",
-    imageDesktop:
-      "https://laz-img-cdn.alicdn.com/images/ims-web/TB1LLFTsljTBKNjSZFuXXb0HFXa.jpg_1200x1200.jpg",
-  },
-];
-
 const HomePage = () => {
-  const [stories, setStories] = useState(data);
   const [activeButton, setActiveButton] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [postsData, setPostsData] = useState([]);
@@ -63,6 +22,8 @@ const HomePage = () => {
   const { token } = useSelector((state) => state.user);
   const avatar = userData.avatar;
   const userId = userData._id;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -237,6 +198,22 @@ const HomePage = () => {
                   )}
                 </button>
               </li>
+              <Link
+                to={"/videos"}
+                className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
+                onClick={() => handleClick("videos")}
+              >
+                <button
+                  className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
+                    activeButton === "videos" ? "text-[#DC143C]" : ""
+                  }`}
+                >
+                  <span className="flex items-center text-[#DC143C]">
+                    <MdOndemandVideo />
+                  </span>
+                  Videos
+                </button>
+              </Link>
               <li
                 className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
                 onClick={() => handleClick("messages")}
@@ -244,24 +221,6 @@ const HomePage = () => {
                 <button
                   className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
                     activeButton === "messages" ? "text-[#DC143C]" : ""
-                  }`}
-                >
-                  <span className="flex items-center text-[#DC143C]">
-                    <MdOndemandVideo />
-                  </span>
-                  Videos
-                  {activeButton === "messages" && (
-                    <div className="absolute top-[15.5rem]  bottom-0 left-16 sm:block hidden bg-[#DC143C] w-1/5 h-1 rounded-full"></div>
-                  )}
-                </button>
-              </li>
-              <li
-                className="flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer "
-                onClick={() => handleClick("videos")}
-              >
-                <button
-                  className={`flex items-center gap-1 text-xl font-normal hover:text-[#DC143C] cursor-pointer transition duration-300 ease-in-out ${
-                    activeButton === "videos" ? "text-[#DC143C]" : ""
                   }`}
                 >
                   <span className="flex items-center text-[#DC143C]">

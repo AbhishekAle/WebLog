@@ -1,7 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { FaUserFriends, FaNewspaper } from "react-icons/fa";
-import { TbPhoto } from "react-icons/tb";
-import { MdCalendarMonth, MdOutlineClose } from "react-icons/md";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { FaUserFriends, FaNewspaper, FaRegComment } from "react-icons/fa";
+import { TbPhoto, TbShare3 } from "react-icons/tb";
+import {
+  MdCalendarMonth,
+  MdOutlineClose,
+  MdOutlineEdit,
+  MdDeleteOutline,
+} from "react-icons/md";
 import { BiSolidMessageDetail } from "react-icons/bi";
 import { IoMdPhotos } from "react-icons/io";
 import { useSelector } from "react-redux";
@@ -10,9 +15,6 @@ import Modal from "react-modal";
 import axios from "axios";
 import uploadPhotos from "../../assets/uploadPhotos.png";
 import { SlLike } from "react-icons/sl";
-import { FaRegComment } from "react-icons/fa";
-import { TbShare3 } from "react-icons/tb";
-import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { Dropdown } from "rsuite";
 import JoditEditor from "jodit-react";
 import { useParams } from "react-router-dom";
@@ -29,7 +31,7 @@ const Posts = () => {
   const [videoFile, setVideoFile] = useState(null);
   const firebase = useFirebase();
 
-  //jodit editor
+  // Jodit editor
   const [content, setContent] = useState("");
   const editor = useRef(null);
   const defaultPlaceholder = "Start typing...";
@@ -43,7 +45,7 @@ const Posts = () => {
         insertImageAsBase64URI: true,
       },
       image: {
-        move: true, // Enable image movement
+        move: true,
       },
     }),
     []
@@ -90,6 +92,7 @@ const Posts = () => {
       console.log(error);
     }
   };
+
   const fetchUserData = async () => {
     try {
       const res = await axios.get(
@@ -125,16 +128,20 @@ const Posts = () => {
       setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
     }
   };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setCreatedPost((prevPost) => ({ ...prevPost, [name]: value }));
   };
+
   const handleTitle = (e) => {
     setArticleTitle(e.target.value);
   };
+
   const handleThumbnail = (e) => {
     setThumbnail(e.target.files[0]);
   };
+
   const handleArticleUpload = async (e) => {
     e.preventDefault();
     const articleData = new FormData();
@@ -160,6 +167,7 @@ const Posts = () => {
       console.log(error);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -187,7 +195,6 @@ const Posts = () => {
     try {
       const formData = new FormData();
       formData.append("description", createdPost.description);
-      // Append the post ID to the form data
       formData.append("postId", selectedPostId);
 
       await axios.put(
@@ -206,6 +213,7 @@ const Posts = () => {
     await fetchData();
     setEditModalOpen(false);
   };
+
   const deletePost = async (id) => {
     await axios.delete(`http://localhost:8000/api/delete-post/${id}`, {
       headers: {
@@ -238,37 +246,63 @@ const Posts = () => {
   const closePostModal = () => {
     setPostModalOpen(false);
   };
+
   const openEditModal = (post) => {
     setCreatedPost({ description: post.description });
     setSelectedPostId(post._id);
     setEditModalOpen(true);
   };
+
   const closeEditModal = () => {
     setEditModalOpen(false);
   };
+
   const openArticleModal = () => {
     setArticleModalOpen(true);
   };
+
   const closeArticleModal = () => {
     setArticleModalOpen(false);
     setThumbnail("");
   };
 
-  //firebase
   const handleFileChange = (e) => {
-    setVideoFile(e.target.files[0]);
+    const file = e.target.files[0];
+    console.log("Selected video file:", file);
+    setVideoFile(file);
+  };
+
+  const fetchAvatar = async (avatarUrl) => {
+    const response = await fetch(avatarUrl);
+    const blob = await response.blob();
+    return new File([blob], "avatar.jpg", { type: "image/jpeg" });
   };
 
   const handleVideoSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !videoFile) {
-      console.log("Title and video file are required.");
+    console.log("Submitting video:", { title, videoFile, userData });
+    if (!title || !videoFile || !userData.avatar) {
+      console.error("Title, video file, and avatar are required.");
       return;
     }
     try {
-      await firebase.handleVideoUpload(title, videoFile, userData._id);
+      const avatarFile = await fetchAvatar(
+        `http://localhost:8000/userProfile/${userData.avatar}`
+      );
+      const result = await firebase.handleVideoUpload(
+        title,
+        videoFile,
+        userData._id,
+        userData.username,
+        avatarFile
+      );
+      console.log("Video upload result:", result);
+      // Reset form or show success message
+      setTitle("");
+      setVideoFile(null);
     } catch (error) {
-      console.error("Error uploading video:", error);
+      console.error("Error submitting video:", error);
+      // Show error message to user
     }
   };
 
@@ -281,8 +315,8 @@ const Posts = () => {
     const hoursDifference = Math.floor(minutesDifference / 60);
     const daysDifference = Math.floor(hoursDifference / 24);
     const weeksDifference = Math.floor(daysDifference / 7);
-    const monthsDifference = Math.floor(daysDifference / 30); // Approximation for months
-    const yearsDifference = Math.floor(daysDifference / 365); // Approximation for years
+    const monthsDifference = Math.floor(daysDifference / 30);
+    const yearsDifference = Math.floor(daysDifference / 365);
 
     if (yearsDifference > 0) {
       return `${yearsDifference} ${
@@ -303,21 +337,13 @@ const Posts = () => {
         hoursDifference === 1 ? "hour" : "hours"
       } ago`;
     } else if (minutesDifference > 0) {
-      return (
-        <>
-          {`${minutesDifference} ${
-            minutesDifference === 1 ? "minute" : "minutes"
-          } ago`}
-        </>
-      );
+      return `${minutesDifference} ${
+        minutesDifference === 1 ? "minute" : "minutes"
+      } ago`;
     } else {
-      return (
-        <>
-          {`${secondsDifference} ${
-            secondsDifference === 1 ? "second" : "seconds"
-          } ago`}
-        </>
-      );
+      return `${secondsDifference} ${
+        secondsDifference === 1 ? "second" : "seconds"
+      } ago`;
     }
   };
 
@@ -360,50 +386,48 @@ const Posts = () => {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="w-full sm:w-1/2 mx-auto">
         {id === userId ? (
-          <>
-            <div className="flex flex-col py-4">
-              <div className=" w-full bg-[#efecd3] rounded-xl">
-                <form className="flex items-center justify-center gap-4 p-4">
-                  <span className=" p-3 rounded-full text-[#DC143C]">
-                    <img
-                      src={`http://localhost:8000/userProfile/${avatar}`}
-                      className="lg:w-14 w-10 lg:h-14 h-10 rounded-full border-4 border-white object-cover"
-                    />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Share Your Thought..."
-                    className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
-                    onClick={openPostModal}
+          <div className="flex flex-col py-4">
+            <div className=" w-full bg-[#efecd3] rounded-xl">
+              <form className="flex items-center justify-center gap-4 p-4">
+                <span className=" p-3 rounded-full text-[#DC143C]">
+                  <img
+                    src={`http://localhost:8000/userProfile/${avatar}`}
+                    className="lg:w-14 w-10 lg:h-14 h-10 rounded-full border-4 border-white object-cover"
+                    alt="User Avatar"
                   />
-                </form>
-                <hr className="border border-white" />
-                <div className="flex justify-center p-4">
-                  <ul className="flex gap-20">
-                    <li
-                      className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium"
-                      onClick={openPostModal}
-                    >
-                      <IoMdPhotos />
-                      <span>Photo/Video</span>
-                    </li>
-                    <li
-                      className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium"
-                      onClick={openArticleModal}
-                    >
-                      <FaNewspaper />
-                      <span>Articles</span>
-                    </li>
-                  </ul>
-                </div>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Share Your Thought..."
+                  className="border w-4/5 p-3 rounded-2xl cursor-pointer outline-none"
+                  onClick={openPostModal}
+                />
+              </form>
+              <hr className="border border-white" />
+              <div className="flex justify-center p-4">
+                <ul className="flex gap-20">
+                  <li
+                    className="flex items-center gap-1 hover:text-[#DC143C] cursor-pointer font-medium"
+                    onClick={openPostModal}
+                  >
+                    <IoMdPhotos />
+                    <span>Photo/Video</span>
+                  </li>
+                  <li
+                    className="flex items-center gap-2 hover:text-[#DC143C] cursor-pointer font-medium"
+                    onClick={openArticleModal}
+                  >
+                    <FaNewspaper />
+                    <span>Articles</span>
+                  </li>
+                </ul>
               </div>
             </div>
-          </>
-        ) : (
-          ""
-        )}
+          </div>
+        ) : null}
 
         <div className="py-4">
           {id === userId ? (
