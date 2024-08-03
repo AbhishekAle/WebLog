@@ -9,21 +9,21 @@ import { useDispatch } from "react-redux";
 import Posts from "./features/Posts";
 import UserArticles from "../components/UserArticles";
 import { useParams } from "react-router-dom";
+import Videos from "./features/Videos"; // Assuming you have this component
+// import { listUserVideos } from "../context/firebase"; // Replace with your actual import
 
 const Account = () => {
   const { userData } = useSelector((state) => state.user);
   const { token } = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({});
   const [userDataById, setUserDataById] = useState({});
   const [profilePic, setProfilePic] = useState();
   const [profileCoverPhoto, setProfileCoverPhoto] = useState();
   const [activeTab, setActiveTab] = useState("posts");
-  const email = formData.email;
-  const phoneNumber = formData.phoneNumber;
+  const [videos, setVideos] = useState([]); // State to store videos
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const avatar = userData.avatar;
-  const coverPhoto = userData.coverPhoto;
   const profileId = useParams();
   const id = profileId.userId;
   const userId = userData._id;
@@ -39,19 +39,25 @@ const Account = () => {
         ? "border-b-2 px-1 border-[#DC143C] text-[#DC143C]"
         : "hover:text-[#DC143C]"
     }`;
+
   useEffect(() => {
     fetchUserById();
-  }, []);
-  useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "videos") {
+      fetchVideos();
+    }
+  }, [activeTab]);
+
   const fetchUserById = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/api/users/${id}`);
       const data = await res.data;
       setUserDataById(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -70,6 +76,19 @@ const Account = () => {
       console.error("Error fetching user data:", error);
     }
   };
+
+  // const fetchVideos = async () => {
+  //   try {
+  //     let videoList;
+  //     if (id && id !== userId) {
+  //       videoList = await listUserVideos(id); // Fetch videos by specific user
+  //     }
+  //     setVideos(videoList);
+  //   } catch (error) {
+  //     console.error("Error fetching videos:", error);
+  //   }
+  // };
+
   const handleChange = (e, type) => {
     if (e.target.type === "file") {
       if (type === "avatar") {
@@ -86,6 +105,7 @@ const Account = () => {
     setFormModalOpen(true);
     setSelectedId(id);
   };
+
   const closeFormModal = () => {
     setFormModalOpen(false);
     setSelectedId(null);
@@ -126,7 +146,7 @@ const Account = () => {
 
   return (
     <div className="w-full px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 py-1 bg-slate-50">
-      {userDataById && id !== userId? (
+      {userDataById && id !== userId ? (
         <>
           <div className="flex flex-col">
             <div>
@@ -150,24 +170,26 @@ const Account = () => {
                   </h2>
                 </div>
               </div>
-             
             </div>
             <hr className="border-black"></hr>
             <div className="w-full">
               <div className="flex  gap-10 py-3 items-center justify-center bg-white">
                 <button
                   onClick={() => handleTabChange("posts")}
-                  className={`${tabItemClass("posts")} font-medium text-lg`}>
+                  className={`${tabItemClass("posts")} font-medium text-lg`}
+                >
                   Posts
                 </button>
                 <button
                   onClick={() => handleTabChange("articles")}
-                  className={`${tabItemClass("articles")} font-medium text-lg`}>
+                  className={`${tabItemClass("articles")} font-medium text-lg`}
+                >
                   Articles
                 </button>
                 <button
                   onClick={() => handleTabChange("videos")}
-                  className={`${tabItemClass("videos")} font-medium text-lg`}>
+                  className={`${tabItemClass("videos")} font-medium text-lg`}
+                >
                   Videos
                 </button>
               </div>
@@ -183,7 +205,11 @@ const Account = () => {
                     <UserArticles />
                   </div>
                 )}
-                {activeTab === "videos" && <div>Videos</div>}
+                {activeTab === "videos" && (
+                  <div>
+                    <Videos videos={videos} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -213,32 +239,36 @@ const Account = () => {
                 </div>
               </div>
               <div className="flex gap-2 sm:gap-4 items-center mt-4 sm:mt-20">
-                  <button
-                    className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
-                    onClick={openFormModal}>
-                    <span>
-                      <FiEdit />
-                    </span>
-                    Edit Profile
-                  </button>
-                </div>
+                <button
+                  className="font-medium text-base sm:text-lg hover:text-[#DC143C] flex items-center justify-center gap-1"
+                  onClick={openFormModal}
+                >
+                  <span>
+                    <FiEdit />
+                  </span>
+                  Edit Profile
+                </button>
+              </div>
             </div>
             <hr className="border-black"></hr>
             <div className="w-full">
               <div className="flex  gap-10 py-3 items-center justify-center bg-white">
                 <button
                   onClick={() => handleTabChange("posts")}
-                  className={`${tabItemClass("posts")} font-medium text-lg`}>
+                  className={`${tabItemClass("posts")} font-medium text-lg`}
+                >
                   Posts
                 </button>
                 <button
                   onClick={() => handleTabChange("articles")}
-                  className={`${tabItemClass("articles")} font-medium text-lg`}>
+                  className={`${tabItemClass("articles")} font-medium text-lg`}
+                >
                   Articles
                 </button>
                 <button
                   onClick={() => handleTabChange("videos")}
-                  className={`${tabItemClass("videos")} font-medium text-lg`}>
+                  className={`${tabItemClass("videos")} font-medium text-lg`}
+                >
                   Videos
                 </button>
               </div>
@@ -254,7 +284,11 @@ const Account = () => {
                     <UserArticles />
                   </div>
                 )}
-                {activeTab === "videos" && <div>Videos</div>}
+                {activeTab === "videos" && (
+                  <div>
+                    <Videos videos={videos} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -264,11 +298,13 @@ const Account = () => {
         isOpen={formModalOpen}
         onRequestClose={closeFormModal}
         className="modal lg:w-1/3 bg-white p-4 rounded-xl shadow"
-        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10">
+        overlayClassName="overlay fixed top-0  w-full right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center px-20 lg:px-10"
+      >
         <div className="max-h-[80vh] overflow-y-auto no-scrollbar">
           <div
             onClick={closeFormModal}
-            className="flex items-end justify-between px-5">
+            className="flex items-end justify-between px-5"
+          >
             <span className="font-bold text-xl">Edit Profile</span>
             <button className=" text-black flex justify-center items-center rounded-xl cursor-pointer font-semibold text-xl hover:text-red-600">
               <MdOutlineClose size={32} />
@@ -278,7 +314,8 @@ const Account = () => {
             <div className="py-4 px-5">
               <form
                 className="flex flex-col justify-center items-center gap-5"
-                onSubmit={handleSubmit}>
+                onSubmit={handleSubmit}
+              >
                 <label className="gap-1 w-full flex flex-col">
                   <span className="font-medium">Profile Picture:</span>
 

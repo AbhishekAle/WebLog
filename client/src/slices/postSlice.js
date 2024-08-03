@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   postData: "",
+  videoData: "",
 };
 
 export const postSlice = createSlice({
@@ -11,9 +12,12 @@ export const postSlice = createSlice({
     setPostData: (state, action) => {
       state.postData = action.payload;
     },
+    setVideoData: (state, action) => {
+      state.videoData = action.payload;
+    },
   },
 });
 
-export const { setPostData } = postSlice.actions;
+export const { setPostData, setVideoData } = postSlice.actions;
 
 export default postSlice.reducer;

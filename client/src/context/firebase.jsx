@@ -1,7 +1,14 @@
 import { createContext, useContext } from "react";
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
 
 const FirebaseContext = createContext(null);
 
@@ -22,68 +29,78 @@ const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 const firestore = getFirestore(firebaseApp);
 
-const handleVideoUpload = async (
-  title,
-  videoFile,
-  userId,
-  username,
-  avatar
-) => {
+const handleVideoUpload = async (title, videoFile, userId, username) => {
   const videoRef = ref(
     storage,
     `uploads/videos/${Date.now()}-${videoFile.name}`
   );
-  const avatarRef = ref(storage, `uploads/images/${Date.now()}-${avatar.name}`);
 
   try {
-    // Upload avatar
-    console.log("Uploading avatar...");
-    const avatarUploadResult = await uploadBytes(avatarRef, avatar);
-    console.log("Avatar upload result:", avatarUploadResult);
-
-    // Fetch avatar download URL
-    console.log("Fetching avatar download URL...");
-    const avatarURL = await getDownloadURL(avatarRef);
-    console.log("Avatar URL:", avatarURL);
-
     // Upload video
     console.log("Uploading video...");
-    const videoUploadResult = await uploadBytes(videoRef, videoFile);
-    console.log("Video upload result:", videoUploadResult);
+    await uploadBytes(videoRef, videoFile);
 
     // Fetch video download URL
     console.log("Fetching video download URL...");
     const videoURL = await getDownloadURL(videoRef);
-    console.log("Video URL:", videoURL);
 
     // Add document to Firestore
     const docRef = await addDoc(collection(firestore, "videos"), {
       title,
       username,
-      avatarURL,
       videoURL,
       userId,
+      createdAt: new Date().toISOString(), // Add this line
     });
+
     console.log("Document written with ID:", docRef.id);
     return docRef;
   } catch (error) {
-    console.error("Error uploading video or avatar:", error);
+    console.error("Error uploading video:", error);
+    throw error;
   }
 };
 
 const listAllVideos = async () => {
   const querySnapshot = await getDocs(collection(firestore, "videos"));
-  const videos = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  const videos = querySnapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt || new Date().toISOString(), // Add this line
+    };
+  });
   console.log("Fetched videos: ", videos);
   return videos;
 };
 
+const listUserVideos = async (userId) => {
+  try {
+    const videosRef = collection(firestore, "videos");
+    const q = query(videosRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    const videos = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt || new Date().toISOString(),
+      };
+    });
+    console.log(`Fetched videos for user ${userId}:`, videos);
+    return videos;
+  } catch (error) {
+    console.error(`Error fetching videos for user ${userId}:`, error);
+    throw error;
+  }
+};
+
 export const FirebaseProvider = ({ children }) => {
   return (
-    <FirebaseContext.Provider value={{ handleVideoUpload, listAllVideos }}>
+    <FirebaseContext.Provider
+      value={{ handleVideoUpload, listAllVideos, listUserVideos }}
+    >
       {children}
     </FirebaseContext.Provider>
   );

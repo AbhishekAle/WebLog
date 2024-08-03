@@ -300,6 +300,7 @@ const Posts = () => {
       // Reset form or show success message
       setTitle("");
       setVideoFile(null);
+      // Optionally, refresh the video list or update UI
     } catch (error) {
       console.error("Error submitting video:", error);
       // Show error message to user
